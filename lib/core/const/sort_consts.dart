@@ -1,0 +1,3 @@
+enum SortOption{
+  manufacturer, brand
+}
