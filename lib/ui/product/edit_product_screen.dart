@@ -208,7 +208,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               _hasImage = false;
                             });
                           },
-                          icon: const Icon(Icons.delete_forever_outlined, color: Colors.black),
+                          icon: const Icon(Icons.delete_forever_outlined, color: Colors.red),
                         ),
                       ),
                   ],

@@ -8,6 +8,7 @@ import '../../product/edit_product_screen.dart';
 
 class ToothpasteCard extends StatefulWidget {
   final ToothpasteProduct toothpasteProduct;
+
   const ToothpasteCard({super.key, required this.toothpasteProduct});
 
   @override
@@ -16,40 +17,88 @@ class ToothpasteCard extends StatefulWidget {
 
 class _ToothpasteCardState extends State<ToothpasteCard> {
   String? imageUrl;
+  late bool dataMissing = false;
 
   void _getImageUrl() async {
-    ProductImageService().getImageUrl(widget.toothpasteProduct.id).then((value) {
+    ProductImageService()
+        .getImageUrl(widget.toothpasteProduct.id)
+        .then((value) {
       setState(() {
         imageUrl = value;
       });
     });
   }
 
+  void _checkIfDataMissing() {
+    if (widget.toothpasteProduct.brand.contains("Opdateres") ||
+        widget.toothpasteProduct.manufacturer.contains("Opdateres") ||
+        widget.toothpasteProduct.link.contains("Opdateres") ||
+        widget.toothpasteProduct.description.contains("Opdateres") ||
+        widget.toothpasteProduct.flouride.contains("Opdateres") ||
+        widget.toothpasteProduct.usage.contains("Opdateres") ||
+        widget.toothpasteProduct.rda.contains("Opdateres") ||
+        widget.toothpasteProduct.effectDuration.contains("Opdateres") ||
+        widget.toothpasteProduct.effect.contains("Opdateres") ||
+        widget.toothpasteProduct.countryCode.contains("Opdateres") ||
+        widget.toothpasteProduct.ingredients.contains("Opdateres")) {
+      setState(() {
+        dataMissing = true;
+      });
+    }
+  }
+
   @override
   void initState() {
     _getImageUrl();
+    _checkIfDataMissing();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: (){
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditProductScreen(widget.toothpasteProduct))).then((value) {setState(() {});});
+      onTap: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute(
+                builder: (context) =>
+                    EditProductScreen(widget.toothpasteProduct)))
+            .then((value) {
+          setState(() {});
+        });
       },
-        title: Text(widget.toothpasteProduct.brand),
-        subtitle: Text(widget.toothpasteProduct.manufacturer),
-        trailing: IconButton(onPressed: () async {
-          await ProductService().deleteFirestoreProduct(widget.toothpasteProduct, imageUrl);
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen()), (route) => false);
-        }, icon: const Icon(Icons.delete, color: Colors.red,)),
-        leading: SizedBox(
-          height: 50,
-          width: 50,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: imageUrl != null ? Image.network(imageUrl!) : Image.network("https://placehold.co/50x50"),
-          ),
+      title: Row(
+        children: [
+          Text(widget.toothpasteProduct.brand),
+          dataMissing? const Padding(
+            padding: EdgeInsets.only(left: 5),
+            child: Icon(Icons.error, color: Colors.red, semanticLabel: "Data mangler",),
+          ) : Container()
+        ],
+      ),
+      subtitle: Text(widget.toothpasteProduct.manufacturer),
+      trailing: IconButton(
+          onPressed: () async {
+            await ProductService()
+                .deleteFirestoreProduct(widget.toothpasteProduct, imageUrl);
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                (route) => false);
+          },
+          icon: const Icon(
+            Icons.delete,
+            color: Colors.red,
+          )),
+      leading: SizedBox(
+        height: 50,
+        width: 50,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: imageUrl != null
+              ? Image.network(imageUrl!)
+              : Image.network("https://placehold.co/50x50"),
         ),
+      ),
     );
   }
 }
