@@ -39,7 +39,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   Uint8List? _image;
   String? savedImage;
-  bool? sls;
 
   @override
   void initState() {
@@ -62,7 +61,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
       ingredientsController,
       countryCodeController
     );
-    sls = toothpasteProduct?.sls ?? false;
     _productImageService.getImageUrl(widget.toothpasteProduct.id).then((image) {
       setState(() {
         savedImage = image;
@@ -81,15 +79,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Rediger tandpasta"),
+        title: const Text("Rediger tandpasta", style: TextStyle(color: Colors.white),),
         elevation: 3,
         backgroundColor: const Color(0xFFFF6624),
-        actions: [
-          IconButton(onPressed: () async {
-            await _productService.deleteFirestoreProduct(widget.toothpasteProduct, savedImage);
-            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen()), (route) => false);
-          }, icon: const Icon(Icons.delete_outline_rounded, color: Colors.red,))
-        ],
+        leading: const BackButton(color: Colors.white,),
       ),
       body: _buildToothPaste(),
     );
@@ -162,17 +155,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
               decoration: InputDecoration(labelText: 'Anvendelse'),
               validator: _validatorUtil.validateName,
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 10),
-              child: CheckboxListTile(
-                  title: const Text("SLS"),
-                  value: sls,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      sls = value!;
-                    });
-                  }),
-            ),
             TextFormField(
               controller: rdaController,
               decoration: InputDecoration(labelText: 'RDA'),
@@ -197,7 +179,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
               controller: ingredientsController,
               decoration: InputDecoration(labelText: 'Ingredienser'),
               validator: _validatorUtil.validateName,
-              maxLines: 7,
             ),
             const SizedBox(
               height: 40,
@@ -214,7 +195,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         descriptionController.text,
                         flourContentController.text,
                         usageController.text,
-                        sls!,
                         rdaController.text,
                         effectController.text,
                         resultController.text,
@@ -243,7 +223,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
       String description,
       String flourContent,
       String usage,
-      bool sls,
       String rda,
       String effect,
       String result,
@@ -256,7 +235,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       );
     });
 
-    List ingredientsList = ingredients.trim().split(",");
+    List ingredientsList = ingredients.split(",");
 
     ToothpasteProduct toothpasteProduct = ToothpasteProduct(
         id: id,
@@ -266,7 +245,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
         description: description,
         flouride: flourContent,
         usage: usage,
-        sls: sls,
         rda: rda,
         effect: effect,
         effectDuration: result,

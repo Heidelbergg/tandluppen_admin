@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:tandluppen_web/core/const/sort_selection_const.dart';
 import 'package:tandluppen_web/core/service/product_service.dart';
 import 'package:tandluppen_web/core/util/sorting/product_sorting/product_sort.dart';
 import 'package:tandluppen_web/ui/product/add_product_screen.dart';
 
 import '../../core/const/sort_consts.dart';
 import '../../core/model/toothpaste_product.dart';
+import '../styles/text_styles.dart';
 import '../widget/product/toothpaste_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _useGlobalSortParameter();
     _productListFuture = ProductService().getToothpasteProductList();
   }
 
@@ -30,16 +33,22 @@ class _HomeScreenState extends State<HomeScreen> {
     if (selected) {
       setState(() {
         _selectedSortOption = option;
+        GlobalSortOption.globalSortOption = _selectedSortOption!;
         _productSort.sortProducts(_products, _selectedSortOption);
       });
     }
+  }
+
+  _useGlobalSortParameter(){
+    print(GlobalSortOption.globalSortOption);
+    handleSortChange(true, GlobalSortOption.globalSortOption);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Tandluppen Admin", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+        title: Text("Tandluppen Admin", style: whiteHeaderTextStyle),
         backgroundColor: const Color(0xFFFF6624),
         elevation: 3,
       ),
@@ -90,28 +99,31 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         SizedBox(
           height: MediaQuery.of(context).size.height,
-          child: FutureBuilder(
-            future: _productListFuture,
-            builder: (BuildContext context, AsyncSnapshot<List<ToothpasteProduct>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text('No data available'));
-              } else {
-                _products = snapshot.data!;
-                if (_selectedSortOption != null) {
-                  _productSort.sortProducts(_products, _selectedSortOption);
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: FutureBuilder(
+              future: _productListFuture,
+              builder: (BuildContext context, AsyncSnapshot<List<ToothpasteProduct>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No data available'));
+                } else {
+                  _products = snapshot.data!;
+                  if (_selectedSortOption != null) {
+                    _productSort.sortProducts(_products, _selectedSortOption);
+                  }
+                  return ListView.builder(
+                    itemCount: _products.length,
+                    itemBuilder: (context, index) {
+                      return ToothpasteCard(toothpasteProduct: _products[index]);
+                    },
+                  );
                 }
-                return ListView.builder(
-                  itemCount: _products.length,
-                  itemBuilder: (context, index) {
-                    return ToothpasteCard(toothpasteProduct: _products[index]);
-                  },
-                );
-              }
-            },
+              },
+            ),
           ),
         ),
       ],

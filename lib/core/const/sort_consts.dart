@@ -1,3 +1,3 @@
 enum SortOption{
-  manufacturer, brand
+  manufacturer, brand, none
 }

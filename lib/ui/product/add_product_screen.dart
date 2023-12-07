@@ -9,6 +9,10 @@ import 'package:tandluppen_web/core/util/validator/validator.dart';
 import 'package:tandluppen_web/ui/home/home_screen.dart';
 import 'package:uuid/uuid.dart';
 
+import '../styles/button_style.dart';
+import '../styles/text_styles.dart';
+import '../styles/textfield_styles.dart';
+
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
 
@@ -33,12 +37,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final ValidatorUtil _validatorUtil = ValidatorUtil();
 
   Uint8List? _image;
-  late bool sls = false;
+  bool _hasImage = false;
+  bool _isHovered = false;
 
   Future getImage() async {
     final image = await ImagePickerWeb.getImageAsBytes();
     setState(() {
       _image = image;
+      _hasImage = true;
     });
   }
 
@@ -46,9 +52,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Tilføj produkt"),
+        title: Text("Tilføj produkt", style: whiteHeaderTextStyle),
         elevation: 3,
         backgroundColor: const Color(0xFFFF6624),
+        leading: const BackButton(color: Colors.white,),
       ),
       body: Container(
         padding: EdgeInsets.all(16.0),
@@ -66,104 +73,230 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   List<Widget> _buildForm() {
     return [
-      _image != null ? SizedBox(
-          height: 150,
-          width: 150,
-          child: Image.memory(_image!)) : Container(),
-      TextFormField(
-        controller: brandController,
-        decoration: InputDecoration(labelText: 'Mærke'),
-        validator: _validatorUtil.validateName,
+      Padding(padding: EdgeInsets.all(8), child: Text("Generelle oplysninger", style: largeTextStyle,),),
+      const SizedBox(height: 20),
+      Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: brandController,
+                decoration: textFieldInputDecoration("Mærke"),
+                validator: _validatorUtil.validateName,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: manufacturerController,
+                decoration: textFieldInputDecoration("Producent"),
+                validator: _validatorUtil.validateName,
+              ),
+            ),
+          ),
+        ],
       ),
-      TextFormField(
-        controller: manufacturerController,
-        decoration: InputDecoration(labelText: 'Producent'),
-        validator: _validatorUtil.validateName,
+      const SizedBox(height: 10,),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextFormField(
+          controller: descriptionController,
+          decoration: textFieldInputDecoration("Beskrivelse"),
+          validator: _validatorUtil.validateName,
+          maxLines: 5,
+        ),
+      ),
+      const SizedBox(height: 10,),
+      _hasImage ? SizedBox(
+        height: 300,
+        width: 150,
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              _image = null;
+              _hasImage = false;
+            });
+          },
+          onHover: (value) {
+            setState(() {
+              _isHovered = value;
+            });
+          },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              if (_hasImage)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.memory(_image!), // Display your image here
+                ),
+              if (_isHovered && _hasImage)
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _image = null; // Remove image
+                        _hasImage = false;
+                      });
+                    },
+                    icon: const Icon(Icons.delete, color: Colors.red,),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ) :
+      Padding(
+        padding: const EdgeInsets.all(8),
+        child: InkWell(
+            onTap: getImage,
+            child: Container(
+              height: 300,
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                color: Colors.grey.withOpacity(0.1)
+              ),
+              child: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.image_search_rounded),
+                    Text("Klik for at uploade et billede")
+                  ],
+                ),
+              ),
+
+            )),
+      ),
+      const SizedBox(height: 10,),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextFormField(
+          controller: linkController,
+          decoration: textFieldInputDecoration("Link"),
+          validator: _validatorUtil.validateName,
+        ),
+      ),
+      const SizedBox(height: 20,),
+      Padding(padding: EdgeInsets.all(8), child: Text("Egenskaber", style: largeTextStyle,),),
+      Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: flourContentController,
+                decoration: textFieldInputDecoration("Flourindhold"),
+                validator: _validatorUtil.validateName,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: rdaController,
+                decoration: textFieldInputDecoration("RDA"),
+                validator: _validatorUtil.validateName,
+              ),
+            ),
+          ),
+        ],
+      ),
+      Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: usageController,
+                decoration: textFieldInputDecoration("Anvendelse"),
+                validator: _validatorUtil.validateName,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: effectController,
+                decoration: textFieldInputDecoration("Effekt"),
+                validator: _validatorUtil.validateName,
+              ),
+            ),
+          ),
+        ],
+      ),
+      Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: resultController,
+                decoration: textFieldInputDecoration("Virkning"),
+                validator: _validatorUtil.validateName,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: countryCodeController,
+                decoration: textFieldInputDecoration("Country-code"),
+                validator: _validatorUtil.validateName,
+              ),
+            ),
+          ),
+        ],
       ),
       Padding(
-        padding: const EdgeInsets.only(top: 20, bottom: 20),
-        child: ElevatedButton(onPressed: getImage, child: Text("Vælg billede")),
-      ),
-      TextFormField(
-        controller: linkController,
-        decoration: InputDecoration(labelText: 'Link'),
-        validator: _validatorUtil.validateName,
-      ),
-      TextFormField(
-        controller: descriptionController,
-        decoration: InputDecoration(labelText: 'Beskrivelse'),
-        validator: _validatorUtil.validateName,
-      ),
-      TextFormField(
-        controller: flourContentController,
-        decoration: InputDecoration(labelText: 'Flourindhold'),
-        validator: _validatorUtil.validateName,
-      ),
-      TextFormField(
-        controller: usageController,
-        decoration: InputDecoration(labelText: 'Anvendelse'),
-        validator: _validatorUtil.validateName,
-      ),
-      Padding(
-        padding: const EdgeInsets.only(top: 10, bottom: 10),
-        child: CheckboxListTile(
-            title: const Text("SLS"),
-            value: sls,
-            onChanged: (bool? value) {
-              setState(() {
-                sls = value!;
-              });
-            }),
-      ),
-      TextFormField(
-        controller: rdaController,
-        decoration: InputDecoration(labelText: 'RDA'),
-        validator: _validatorUtil.validateName,
-      ),
-      TextFormField(
-        controller: effectController,
-        decoration: InputDecoration(labelText: 'Effekt'),
-        validator: _validatorUtil.validateName,
-      ),
-      TextFormField(
-        controller: resultController,
-        decoration: InputDecoration(labelText: 'Virkning'),
-        validator: _validatorUtil.validateName,
-      ),
-      TextFormField(
-        controller: countryCodeController,
-        decoration: InputDecoration(labelText: 'Country-code'),
-        validator: _validatorUtil.validateName,
-      ),
-      TextFormField(
-        controller: ingredientsController,
-        decoration: InputDecoration(labelText: 'Ingredienser'),
-        validator: _validatorUtil.validateName,
-        maxLines: 7,
+        padding: const EdgeInsets.all(8.0),
+        child: TextFormField(
+          controller: ingredientsController,
+          decoration: textFieldInputDecoration("Ingredienser"),
+          validator: _validatorUtil.validateName,
+        ),
       ),
       const SizedBox(
         height: 40,
       ),
-      ElevatedButton(
-        onPressed: () {
-          if (_key.currentState!.validate()) {
-            _submitForm(
-                brandController.text,
-                manufacturerController.text,
-                linkController.text,
-                descriptionController.text,
-                flourContentController.text,
-                usageController.text,
-                sls,
-                rdaController.text,
-                effectController.text,
-                resultController.text,
-                ingredientsController.text,
-                countryCodeController.text,
-                _image);
-          }
-        },
-        child: const Text('Gem'),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              if (_key.currentState!.validate()) {
+                _submitForm(
+                    brandController.text,
+                    manufacturerController.text,
+                    linkController.text,
+                    descriptionController.text,
+                    flourContentController.text,
+                    usageController.text,
+                    rdaController.text,
+                    effectController.text,
+                    resultController.text,
+                    ingredientsController.text,
+                    countryCodeController.text,
+                    _image);
+              }
+            },
+            style: greenButtonStyle,
+            child: const Text('Opret produkt', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),),
+          ),
+        ],
+      ),
+      const SizedBox(
+        height: 20,
       ),
     ];
   }
@@ -175,7 +308,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
       String description,
       String flourContent,
       String usage,
-      bool sls,
       String rda,
       String effect,
       String result,
@@ -190,7 +322,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     });
 
     var uuid = const Uuid().v4();
-    List<String> ingredientsList = ingredients.trim().split(",");
+    List<String> ingredientsList = ingredients.split(",");
 
     ToothpasteProduct toothpasteProduct = ToothpasteProduct(
         id: uuid,
@@ -200,7 +332,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
         description: description,
         flouride: flourContent,
         usage: usage,
-        sls: sls,
         rda: rda,
         effect: effect,
         effectDuration: result,

@@ -6,7 +6,6 @@ class ToothpasteProduct {
   final String description;
   final String flouride;
   final String usage;
-  final bool sls;
   final String rda;
   final String effectDuration;
   final String effect;
@@ -21,7 +20,6 @@ class ToothpasteProduct {
       required this.description,
       required this.flouride,
       required this.usage,
-      required this.sls,
       required this.rda,
       required this.effect,
       required this.effectDuration,
@@ -37,7 +35,6 @@ class ToothpasteProduct {
       description: json['description'] ?? 'opdateres',
       flouride: json['flouride'] ?? 'opdateres',
       usage: json['usage'] ?? 'opdateres',
-      sls: json['sls'] == "JA",
       rda: json['rda'] ?? 'opdateres',
       effect: json['effect'] ?? 'opdateres',
       effectDuration: json['effect_duration'] ?? 'opdateres',
@@ -55,7 +52,6 @@ class ToothpasteProduct {
       'description': description,
       'flouride': flouride,
       'usage': usage,
-      'sls': sls,
       'rda': rda,
       'effect': effect,
       'effect_duration': effectDuration,
