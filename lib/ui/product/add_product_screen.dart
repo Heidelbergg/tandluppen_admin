@@ -347,7 +347,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     });
 
     var uuid = const Uuid().v4();
-    List<String> ingredientsList = ingredients.split(",");
+    List ingredientsList = ingredients.trim().split(",");
 
     ToothpasteProduct toothpasteProduct = ToothpasteProduct(
         id: uuid,

@@ -78,8 +78,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Future getImage() async {
     final image = await ImagePickerWeb.getImageAsBytes();
     setState(() {
-      _image = image;
-      _hasImage = true;
+      if (_image != null){
+        _image = image;
+        _hasImage = true;
+      }
     });
   }
 
@@ -398,8 +400,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       );
     });
 
-    List ingredientsList = ingredients.split(",");
-    print(ingredientsList);
+    List ingredientsList = ingredients.trim().split(",");
 
     ToothpasteProduct toothpasteProduct = ToothpasteProduct(
         id: id,

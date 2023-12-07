@@ -17,12 +17,14 @@ class ProductService {
     var collection = await FirestoreConsts.firestoreToothpasteCollection.get();
     for (var product in collection.docs) {
       list.add(ToothpasteProduct.fromJson(product.data()));
+
       /// Parse ingredients to list in firebase after import
       /*String ingredients = product.data()['ingredients'];
       List ingredientsList = ingredients.split(",");
       FirestoreConsts.firestoreToothpasteCollection.doc(product.id).update({
         'ingredients': ingredientsList
       });*/
+
       /// Insert uuid for each product
       /*var uuid = const Uuid().v4();
       FirestoreConsts.firestoreToothpasteCollection.doc(product.id).update({'id':uuid});*/
@@ -67,13 +69,14 @@ class ProductService {
       effectController.text = toothpasteProduct.effect;
       resultController.text = toothpasteProduct.effectDuration;
       countryCodeController.text = toothpasteProduct.countryCode;
-      ingredientsController.text = toothpasteProduct.ingredients
-          .toString()
-          .replaceAll("]", "")
-          .replaceAll("[", "");
+
+      List<dynamic> ingredients = toothpasteProduct.ingredients;
+      String formattedIngredients = ingredients.map((ingredient) => ingredient.trim()).join(',');
+      ingredientsController.text = formattedIngredients;
 
       return toothpasteProduct;
     }
+    return null;
   }
 
   Future<void> updateFirestoreProduct(
