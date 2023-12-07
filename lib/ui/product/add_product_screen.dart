@@ -42,15 +42,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   Future getImage() async {
     final image = await ImagePickerWeb.getImageAsBytes();
-    setState(() {
-      _image = image;
-      _hasImage = true;
-    });
+    if (image != null){
+      setState(() {
+        _image = image;
+        _hasImage = true;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.withOpacity(0.15),
       appBar: AppBar(
         title: Text("Tilføj produkt", style: whiteHeaderTextStyle),
         elevation: 3,
@@ -73,197 +76,219 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   List<Widget> _buildForm() {
     return [
-      Padding(padding: EdgeInsets.all(8), child: Text("Generelle oplysninger", style: largeTextStyle,),),
-      const SizedBox(height: 20),
-      Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: brandController,
-                decoration: textFieldInputDecoration("Mærke"),
-                validator: _validatorUtil.validateName,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: manufacturerController,
-                decoration: textFieldInputDecoration("Producent"),
-                validator: _validatorUtil.validateName,
-              ),
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 10,),
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: TextFormField(
-          controller: descriptionController,
-          decoration: textFieldInputDecoration("Beskrivelse"),
-          validator: _validatorUtil.validateName,
-          maxLines: 5,
+      Container(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.white
         ),
-      ),
-      const SizedBox(height: 10,),
-      _hasImage ? SizedBox(
-        height: 300,
-        width: 150,
-        child: InkWell(
-          onTap: () {
-            setState(() {
-              _image = null;
-              _hasImage = false;
-            });
-          },
-          onHover: (value) {
-            setState(() {
-              _isHovered = value;
-            });
-          },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              if (_hasImage)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.memory(_image!), // Display your image here
-                ),
-              if (_isHovered && _hasImage)
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _image = null; // Remove image
-                        _hasImage = false;
-                      });
-                    },
-                    icon: const Icon(Icons.delete, color: Colors.red,),
+        child: Column(
+          children: [
+            Align(alignment: Alignment.centerLeft, child: Padding(padding: EdgeInsets.all(8), child: Text("Generelle oplysninger", style: largeBlackTextStyle,),)),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: brandController,
+                      decoration: textFieldInputDecoration("Mærke"),
+                      validator: _validatorUtil.validateName,
+                    ),
                   ),
                 ),
-            ],
-          ),
-        ),
-      ) :
-      Padding(
-        padding: const EdgeInsets.all(8),
-        child: InkWell(
-            onTap: getImage,
-            child: Container(
-              height: 300,
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                color: Colors.grey.withOpacity(0.1)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: manufacturerController,
+                      decoration: textFieldInputDecoration("Producent"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: descriptionController,
+                decoration: textFieldInputDecoration("Beskrivelse"),
+                validator: _validatorUtil.validateName,
+                maxLines: 5,
               ),
-              child: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+            ),
+            const SizedBox(height: 10,),
+            _hasImage ? SizedBox(
+              height: 250,
+              //width: 150,
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    _image = null;
+                    _hasImage = false;
+                  });
+                },
+                onHover: (value) {
+                  setState(() {
+                    _isHovered = value;
+                  });
+                },
+                child: Stack(
+                  alignment: Alignment.center,
                   children: [
-                    Icon(Icons.image_search_rounded),
-                    Text("Klik for at uploade et billede")
+                    if (_hasImage)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.memory(_image!),
+                      ),
+                    if (_isHovered && _hasImage)
+                      Positioned(
+                        top: 30,
+                        right: 2.5,
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _image = null;
+                              _hasImage = false;
+                            });
+                          },
+                          icon: const Icon(Icons.delete_forever_outlined, color: Colors.black),
+                        ),
+                      ),
                   ],
                 ),
               ),
+            ) :
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: InkWell(
+                  onTap: getImage,
+                  child: Container(
+                    height: 300,
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      color: Colors.grey.withOpacity(0.1)
+                    ),
+                    child: const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.image_search_rounded),
+                          Text("Klik for at uploade et billede")
+                        ],
+                      ),
+                    ),
 
-            )),
-      ),
-      const SizedBox(height: 10,),
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: TextFormField(
-          controller: linkController,
-          decoration: textFieldInputDecoration("Link"),
-          validator: _validatorUtil.validateName,
+                  )),
+            ),
+            const SizedBox(height: 10,),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: linkController,
+                decoration: textFieldInputDecoration("Link"),
+                validator: _validatorUtil.validateName,
+              ),
+            ),
+          ],
         ),
       ),
       const SizedBox(height: 20,),
-      Padding(padding: EdgeInsets.all(8), child: Text("Egenskaber", style: largeTextStyle,),),
-      Row(
-        children: [
-          Expanded(
-            child: Padding(
+      Container(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            color: Colors.white
+        ),
+        child: Column(
+          children: [
+            Align(alignment: Alignment.centerLeft, child: Padding(padding: EdgeInsets.all(8), child: Text("Egenskaber", style: largeBlackTextStyle,),)),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: flourContentController,
+                      decoration: textFieldInputDecoration("Flourindhold"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: rdaController,
+                      decoration: textFieldInputDecoration("RDA"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: usageController,
+                      decoration: textFieldInputDecoration("Anvendelse"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: effectController,
+                      decoration: textFieldInputDecoration("Effekt"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: resultController,
+                      decoration: textFieldInputDecoration("Virkning"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: countryCodeController,
+                      decoration: textFieldInputDecoration("Country-code"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
-                controller: flourContentController,
-                decoration: textFieldInputDecoration("Flourindhold"),
+                controller: ingredientsController,
+                decoration: textFieldInputDecoration("Ingredienser"),
                 validator: _validatorUtil.validateName,
               ),
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: rdaController,
-                decoration: textFieldInputDecoration("RDA"),
-                validator: _validatorUtil.validateName,
-              ),
-            ),
-          ),
-        ],
-      ),
-      Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: usageController,
-                decoration: textFieldInputDecoration("Anvendelse"),
-                validator: _validatorUtil.validateName,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: effectController,
-                decoration: textFieldInputDecoration("Effekt"),
-                validator: _validatorUtil.validateName,
-              ),
-            ),
-          ),
-        ],
-      ),
-      Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: resultController,
-                decoration: textFieldInputDecoration("Virkning"),
-                validator: _validatorUtil.validateName,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: countryCodeController,
-                decoration: textFieldInputDecoration("Country-code"),
-                validator: _validatorUtil.validateName,
-              ),
-            ),
-          ),
-        ],
-      ),
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: TextFormField(
-          controller: ingredientsController,
-          decoration: textFieldInputDecoration("Ingredienser"),
-          validator: _validatorUtil.validateName,
+          ],
         ),
       ),
       const SizedBox(
@@ -291,7 +316,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               }
             },
             style: greenButtonStyle,
-            child: const Text('Opret produkt', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),),
+            child: const Text('Opret produkt', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20),),
           ),
         ],
       ),

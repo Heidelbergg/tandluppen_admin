@@ -8,6 +8,9 @@ import 'package:tandluppen_web/core/service/product_service.dart';
 import '../../core/service/product_image_service.dart';
 import '../../core/util/validator/validator.dart';
 import '../home/home_screen.dart';
+import '../styles/button_style.dart';
+import '../styles/text_styles.dart';
+import '../styles/textfield_styles.dart';
 
 class EditProductScreen extends StatefulWidget {
   final ToothpasteProduct toothpasteProduct;
@@ -38,7 +41,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final ValidatorUtil _validatorUtil = ValidatorUtil();
 
   Uint8List? _image;
-  String? savedImage;
+  String? _savedImage;
+
+  bool _hasImage = false;
+  bool _isHovered = false;
 
   @override
   void initState() {
@@ -47,7 +53,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _loadDataFromDatabase() async {
-    ToothpasteProduct? toothpasteProduct = await _productService.populateTextFields(
+    await _productService.populateTextFields(
       widget.toothpasteProduct.id,
       brandController,
       manufacturerController,
@@ -63,7 +69,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
     _productImageService.getImageUrl(widget.toothpasteProduct.id).then((image) {
       setState(() {
-        savedImage = image;
+        _savedImage = image;
+        _hasImage = true;
       });
     });
   }
@@ -72,6 +79,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     final image = await ImagePickerWeb.getImageAsBytes();
     setState(() {
       _image = image;
+      _hasImage = true;
     });
   }
 
@@ -112,107 +120,262 @@ class _EditProductScreenState extends State<EditProductScreen> {
         key: _key,
         child: ListView(
           shrinkWrap: true,
+          children: _buildForm(),
+        )
+      ),
+    );
+  }
+
+  List<Widget> _buildForm() {
+    return [
+      Container(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            color: Colors.white
+        ),
+        child: Column(
           children: [
-            savedImage != null ? SizedBox(
-              height: 150,
-              width: 150,
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.network(savedImage!)),
-            ) : Container(),
-            _image != null ? Image.memory(_image!) : Container(),
-            TextFormField(
-              controller: brandController,
-              decoration: InputDecoration(labelText: 'Mærke'),
-              validator: _validatorUtil.validateName,
+            Align(alignment: Alignment.centerLeft, child: Padding(padding: EdgeInsets.all(8), child: Text("Generelle oplysninger", style: largeBlackTextStyle,),)),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: brandController,
+                      decoration: textFieldInputDecoration("Mærke"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: manufacturerController,
+                      decoration: textFieldInputDecoration("Producent"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            TextFormField(
-              controller: manufacturerController,
-              decoration: InputDecoration(labelText: 'Producent'),
-              validator: _validatorUtil.validateName,
-            ),
+            const SizedBox(height: 10,),
             Padding(
-              padding: const EdgeInsets.only(top: 20, bottom: 20),
-              child: ElevatedButton(onPressed: getImage, child: Text("Vælg billede")),
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: descriptionController,
+                decoration: textFieldInputDecoration("Beskrivelse"),
+                validator: _validatorUtil.validateName,
+                maxLines: 5,
+              ),
             ),
-            TextFormField(
-              controller: linkController,
-              decoration: InputDecoration(labelText: 'Link'),
-              validator: _validatorUtil.validateName,
+            const SizedBox(height: 10,),
+            _hasImage ? SizedBox(
+              height: 250,
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    _image = null;
+                    _hasImage = false;
+                  });
+                },
+                onHover: (value) {
+                  setState(() {
+                    _isHovered = value;
+                  });
+                },
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    if (_hasImage)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: _savedImage != null ? Image.network(_savedImage!) : Image.memory(_image!),
+                      ),
+                    if (_isHovered && _hasImage)
+                      Positioned(
+                        top: 30,
+                        right: 2.5,
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _image = null;
+                              _hasImage = false;
+                            });
+                          },
+                          icon: const Icon(Icons.delete_forever_outlined, color: Colors.black),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ) :
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: InkWell(
+                  onTap: getImage,
+                  child: Container(
+                    height: 300,
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(Radius.circular(10)),
+                        color: Colors.grey.withOpacity(0.1)
+                    ),
+                    child: const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.image_search_rounded),
+                          Text("Klik for at uploade et billede")
+                        ],
+                      ),
+                    ),
+
+                  )),
             ),
-            TextFormField(
-              controller: descriptionController,
-              decoration: InputDecoration(labelText: 'Beskrivelse'),
-              validator: _validatorUtil.validateName,
-            ),
-            TextFormField(
-              controller: flourContentController,
-              decoration: InputDecoration(labelText: 'Flourindhold'),
-              validator: _validatorUtil.validateName,
-            ),
-            TextFormField(
-              controller: usageController,
-              decoration: InputDecoration(labelText: 'Anvendelse'),
-              validator: _validatorUtil.validateName,
-            ),
-            TextFormField(
-              controller: rdaController,
-              decoration: InputDecoration(labelText: 'RDA'),
-              validator: _validatorUtil.validateName,
-            ),
-            TextFormField(
-              controller: effectController,
-              decoration: InputDecoration(labelText: 'Effekt'),
-              validator: _validatorUtil.validateName,
-            ),
-            TextFormField(
-              controller: resultController,
-              decoration: InputDecoration(labelText: 'Virkning'),
-              validator: _validatorUtil.validateName,
-            ),
-            TextFormField(
-              controller: countryCodeController,
-              decoration: InputDecoration(labelText: 'Country-code'),
-              validator: _validatorUtil.validateName,
-            ),
-            TextFormField(
-              controller: ingredientsController,
-              decoration: InputDecoration(labelText: 'Ingredienser'),
-              validator: _validatorUtil.validateName,
-            ),
-            const SizedBox(
-              height: 40,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                try {
-                  if (_key.currentState!.validate()) {
-                    _submitForm(
-                        widget.toothpasteProduct.id,
-                        brandController.text,
-                        manufacturerController.text,
-                        linkController.text,
-                        descriptionController.text,
-                        flourContentController.text,
-                        usageController.text,
-                        rdaController.text,
-                        effectController.text,
-                        resultController.text,
-                        ingredientsController.text,
-                        countryCodeController.text,
-                        _image);
-                  }
-                }
-                on Exception catch (e){
-                  print(e);
-                }
-              },
-              child: const Text('Gem'),
+            const SizedBox(height: 10,),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: linkController,
+                decoration: textFieldInputDecoration("Link"),
+                validator: _validatorUtil.validateName,
+              ),
             ),
           ],
         ),
       ),
-    );
+      const SizedBox(height: 20,),
+      Container(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            color: Colors.white
+        ),
+        child: Column(
+          children: [
+            Align(alignment: Alignment.centerLeft, child: Padding(padding: EdgeInsets.all(8), child: Text("Egenskaber", style: largeBlackTextStyle,),)),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: flourContentController,
+                      decoration: textFieldInputDecoration("Flourindhold"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: rdaController,
+                      decoration: textFieldInputDecoration("RDA"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: usageController,
+                      decoration: textFieldInputDecoration("Anvendelse"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: effectController,
+                      decoration: textFieldInputDecoration("Effekt"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: resultController,
+                      decoration: textFieldInputDecoration("Virkning"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: countryCodeController,
+                      decoration: textFieldInputDecoration("Country-code"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: ingredientsController,
+                decoration: textFieldInputDecoration("Ingredienser"),
+                validator: _validatorUtil.validateName,
+              ),
+            ),
+          ],
+        ),
+      ),
+      const SizedBox(
+        height: 40,
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              if (_key.currentState!.validate()) {
+                _submitForm(
+                    widget.toothpasteProduct.id,
+                    brandController.text,
+                    manufacturerController.text,
+                    linkController.text,
+                    descriptionController.text,
+                    flourContentController.text,
+                    usageController.text,
+                    rdaController.text,
+                    effectController.text,
+                    resultController.text,
+                    ingredientsController.text,
+                    countryCodeController.text,
+                    _image);
+              }
+            },
+            style: greenButtonStyle,
+            child: const Text('Opdater produkt', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20),),
+          ),
+        ],
+      ),
+      const SizedBox(
+        height: 20,
+      ),
+    ];
   }
 
   void _submitForm(
@@ -236,6 +399,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
 
     List ingredientsList = ingredients.split(",");
+    print(ingredientsList);
 
     ToothpasteProduct toothpasteProduct = ToothpasteProduct(
         id: id,

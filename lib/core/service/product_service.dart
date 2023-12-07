@@ -70,8 +70,7 @@ class ProductService {
       ingredientsController.text = toothpasteProduct.ingredients
           .toString()
           .replaceAll("]", "")
-          .replaceAll("[", "")
-          .replaceAll(" ", "");
+          .replaceAll("[", "");
 
       return toothpasteProduct;
     }
