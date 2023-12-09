@@ -69,10 +69,16 @@ class _ToothpasteCardState extends State<ToothpasteCard> {
       title: Row(
         children: [
           Text(widget.toothpasteProduct.brand),
-          dataMissing? const Padding(
-            padding: EdgeInsets.only(left: 5),
-            child: Icon(Icons.error, color: Colors.red, semanticLabel: "Data mangler",),
-          ) : Container()
+          dataMissing
+              ? const Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Icon(
+                    Icons.error,
+                    color: Colors.red,
+                    semanticLabel: "Data mangler",
+                  ),
+                )
+              : Container()
         ],
       ),
       subtitle: Text(widget.toothpasteProduct.manufacturer),
