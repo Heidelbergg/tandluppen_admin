@@ -28,18 +28,18 @@ class ToothpasteProduct {
 
   factory ToothpasteProduct.fromJson(Map<String, dynamic> json) {
     return ToothpasteProduct(
-      id: json['id'] ?? 'opdateres',
-      brand: json['brand'] ?? 'opdateres',
-      manufacturer: json['manufacturer'] ?? 'opdateres',
-      link: json['link'] ?? 'opdateres',
-      description: json['description'] ?? 'opdateres',
-      flouride: json['flouride'] ?? 'opdateres',
-      usage: json['usage'] ?? 'opdateres',
-      rda: json['rda'] ?? 'opdateres',
-      effect: json['effect'] ?? 'opdateres',
-      effectDuration: json['effect_duration'] ?? 'opdateres',
+      id: json['id'] ?? 'Opdateres',
+      brand: json['brand'] ?? 'Opdateres',
+      manufacturer: json['manufacturer'] ?? 'Opdateres',
+      link: json['link'] ?? 'Opdateres',
+      description: json['description'] ?? 'Opdateres',
+      flouride: json['flouride'] ?? 'Opdateres',
+      usage: json['usage'] ?? 'Opdateres',
+      rda: json['rda'] ?? 'Opdateres',
+      effect: json['effect'] ?? 'Opdateres',
+      effectDuration: json['effect_duration'] ?? 'Opdateres',
       ingredients: json['ingredients'] ?? [],
-      countryCode: json['c_code'] ?? 'opdateres',
+      countryCode: json['c_code'] ?? 'Opdateres',
     );
   }
 
@@ -59,5 +59,22 @@ class ToothpasteProduct {
       'c_code': countryCode
     };
     return json;
+  }
+
+  List<String> toCSV(){
+    return [
+      id,
+      brand,
+      manufacturer,
+      link,
+      description,
+      flouride,
+      usage,
+      rda,
+      effectDuration,
+      effect,
+      countryCode,
+      ...ingredients.map((ingredient) => '$ingredient'),
+    ];
   }
 }

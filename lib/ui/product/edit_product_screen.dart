@@ -260,7 +260,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         ),
         child: Column(
           children: [
-            Align(alignment: Alignment.centerLeft, child: Padding(padding: EdgeInsets.all(8), child: Text("Egenskaber", style: largeBlackTextStyle,),)),
+            Align(alignment: Alignment.centerLeft, child: Padding(padding: const EdgeInsets.all(8), child: Text("Egenskaber", style: largeBlackTextStyle,),)),
             Row(
               children: [
                 Expanded(
@@ -278,8 +278,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: rdaController,
-                      decoration: textFieldInputDecoration("RDA"),
-                      validator: _validatorUtil.validateName,
+                      decoration: textFieldNotRequiredInputDecoration("RDA"),
                     ),
                   ),
                 ),
@@ -292,8 +291,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: usageController,
-                      decoration: textFieldInputDecoration("Anvendelse"),
-                      validator: _validatorUtil.validateName,
+                      decoration: textFieldNotRequiredInputDecoration("Anvendelse"),
                     ),
                   ),
                 ),
@@ -302,8 +300,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: effectController,
-                      decoration: textFieldInputDecoration("Effekt"),
-                      validator: _validatorUtil.validateName,
+                      decoration: textFieldNotRequiredInputDecoration("Effekt"),
                     ),
                   ),
                 ),
@@ -316,8 +313,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: resultController,
-                      decoration: textFieldInputDecoration("Virkning"),
-                      validator: _validatorUtil.validateName,
+                      decoration: textFieldNotRequiredInputDecoration("Virkning"),
                     ),
                   ),
                 ),

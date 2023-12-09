@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tandluppen_web/core/const/excel_export_consts.dart';
 import 'package:tandluppen_web/core/const/sort_selection_const.dart';
 import 'package:tandluppen_web/core/service/product_service.dart';
 import 'package:tandluppen_web/core/util/sorting/product_sorting/product_sort.dart';
@@ -8,6 +9,8 @@ import '../../core/const/sort_consts.dart';
 import '../../core/model/toothpaste_product.dart';
 import '../styles/text_styles.dart';
 import '../widget/product/toothpaste_card.dart';
+
+import 'package:to_csv/to_csv.dart' as exportCSV;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -21,6 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<List<ToothpasteProduct>> _productListFuture;
   List<ToothpasteProduct> _products = [];
   final ProductSort _productSort = ProductSort();
+
+  // Export to CSV
+  List<List<String>> listOfLists = [];
 
   @override
   void initState() {
@@ -40,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _useGlobalSortParameter(){
-    print(GlobalSortOption.globalSortOption);
     handleSortChange(true, GlobalSortOption.globalSortOption);
   }
 
@@ -94,14 +99,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   handleSortChange(selected, SortOption.brand);
                 },
               ),
+              const Spacer(),
+              TextButton.icon(onPressed: () async {
+                listOfLists.add(ExcelExportConst.excelHeaders);
+                for (var product in await _productListFuture) {
+                  listOfLists.add(product.toCSV());
+                }
+                exportCSV.myCSV(ExcelExportConst.excelHeaders, listOfLists);
+              }, icon: const Icon(Icons.download, size: 20,), label: const Text("Eskporter til CSV", style: TextStyle(fontSize: 12),))
             ],
           ),
         ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: FutureBuilder(
+        Container(
+          height: MediaQuery.of(context).size.height / 1.25,
+          margin: const EdgeInsets.fromLTRB(300, 50, 300, 50),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.withOpacity(0.25)),
+            borderRadius: BorderRadius.circular(20)
+          ),
+          child: FutureBuilder(
               future: _productListFuture,
               builder: (BuildContext context, AsyncSnapshot<List<ToothpasteProduct>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -115,17 +132,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (_selectedSortOption != null) {
                     _productSort.sortProducts(_products, _selectedSortOption);
                   }
-                  return ListView.builder(
+                  return ListView.separated(
                     itemCount: _products.length,
                     itemBuilder: (context, index) {
                       return ToothpasteCard(toothpasteProduct: _products[index]);
-                    },
+                    }, separatorBuilder: (BuildContext context, int index) {
+                      return Divider(
+                        color: Colors.grey.withOpacity(0.25),
+                      );
+                  },
                   );
                 }
               },
             ),
           ),
-        ),
       ],
     );
   }

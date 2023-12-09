@@ -84,7 +84,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ),
         child: Column(
           children: [
-            Align(alignment: Alignment.centerLeft, child: Padding(padding: EdgeInsets.all(8), child: Text("Generelle oplysninger", style: largeBlackTextStyle,),)),
+            Align(alignment: Alignment.centerLeft, child: Padding(padding: const EdgeInsets.all(8), child: Text("Generelle oplysninger", style: largeBlackTextStyle,),)),
             const SizedBox(height: 20),
             Row(
               children: [
@@ -225,8 +225,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: rdaController,
-                      decoration: textFieldInputDecoration("RDA"),
-                      validator: _validatorUtil.validateName,
+                      decoration: textFieldNotRequiredInputDecoration("RDA"),
                     ),
                   ),
                 ),
@@ -239,8 +238,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: usageController,
-                      decoration: textFieldInputDecoration("Anvendelse"),
-                      validator: _validatorUtil.validateName,
+                      decoration: textFieldNotRequiredInputDecoration("Anvendelse"),
                     ),
                   ),
                 ),
@@ -249,8 +247,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: effectController,
-                      decoration: textFieldInputDecoration("Effekt"),
-                      validator: _validatorUtil.validateName,
+                      decoration: textFieldNotRequiredInputDecoration("Effekt"),
                     ),
                   ),
                 ),
@@ -263,8 +260,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: resultController,
-                      decoration: textFieldInputDecoration("Virkning"),
-                      validator: _validatorUtil.validateName,
+                      decoration: textFieldNotRequiredInputDecoration("Virkning"),
                     ),
                   ),
                 ),
