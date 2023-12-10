@@ -302,7 +302,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       confirmText: const Text("Ok"),
                       cancelText: const Text("Annuller"),
                       buttonText: const Text("Anvendelse"),
-                      buttonIcon: const Icon(Icons.add_circle_outline),
+                      buttonIcon: const Icon(Icons.keyboard_arrow_down),
                       decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10)), color: const Color(0xFFFF6624).withOpacity(0.05)),
                       selectedColor: const Color(0xFFFF6624),
                       items: AnvendelseConsts.anvendelseConsts.map((e) => MultiSelectItem(e, e)).toList(),
