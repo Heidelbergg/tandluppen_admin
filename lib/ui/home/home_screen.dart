@@ -111,7 +111,6 @@ class _HomeScreenState extends State<HomeScreen> {
               const Spacer(),
               TextButton.icon(
                   onPressed: () async {
-                    listOfLists.add(ExcelExportConst.excelHeaders);
                     for (var product in await _productListFuture) {
                       listOfLists.add(product.toCSV());
                     }

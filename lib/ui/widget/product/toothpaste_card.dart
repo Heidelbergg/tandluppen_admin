@@ -34,10 +34,6 @@ class _ToothpasteCardState extends State<ToothpasteCard> {
         widget.toothpasteProduct.link.contains("Opdateres") ||
         widget.toothpasteProduct.description.contains("Opdateres") ||
         widget.toothpasteProduct.flouride.contains("Opdateres") ||
-        widget.toothpasteProduct.usage.contains("Opdateres") ||
-        widget.toothpasteProduct.rda.contains("Opdateres") ||
-        widget.toothpasteProduct.effectDuration.contains("Opdateres") ||
-        widget.toothpasteProduct.effect.contains("Opdateres") ||
         widget.toothpasteProduct.countryCode.contains("Opdateres") ||
         widget.toothpasteProduct.ingredients.contains("Opdateres")) {
       setState(() {
