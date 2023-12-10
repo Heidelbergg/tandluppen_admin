@@ -4,7 +4,6 @@ import 'package:tandluppen_web/core/service/product_image_service.dart';
 import 'package:tandluppen_web/core/service/product_service.dart';
 
 import '../../home/home_screen.dart';
-import '../../product/edit_product_screen.dart';
 
 class ToothpasteCard extends StatefulWidget {
   final ToothpasteProduct toothpasteProduct;
@@ -57,15 +56,6 @@ class _ToothpasteCardState extends State<ToothpasteCard> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(
-                builder: (context) =>
-                    EditProductScreen(widget.toothpasteProduct)))
-            .then((value) {
-          setState(() {});
-        });
-      },
       title: Row(
         children: [
           Text(widget.toothpasteProduct.brand),

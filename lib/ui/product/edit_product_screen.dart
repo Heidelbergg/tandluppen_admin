@@ -78,7 +78,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Future getImage() async {
     final image = await ImagePickerWeb.getImageAsBytes();
     setState(() {
-      if (_image != null){
+      if (image != null){
+        _savedImage = null;
         _image = image;
         _hasImage = true;
       }
@@ -182,6 +183,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   setState(() {
                     _image = null;
                     _hasImage = false;
+                    _savedImage = null;
                   });
                 },
                 onHover: (value) {
@@ -205,6 +207,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           onPressed: () {
                             setState(() {
                               _image = null;
+                              _savedImage = null;
                               _hasImage = false;
                             });
                           },
@@ -416,6 +419,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     if (_image != null){
       await _productImageService.storeProductImageToStorage(_image, id);
     }
-    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen()), (route) => false);
+    Navigator.pop(context);
+    Navigator.pop(context);
   }
 }

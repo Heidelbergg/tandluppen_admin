@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:tandluppen_web/core/const/excel_export_consts.dart';
 import 'package:tandluppen_web/core/const/sort_selection_const.dart';
 import 'package:tandluppen_web/core/service/product_service.dart';
@@ -7,6 +8,7 @@ import 'package:tandluppen_web/ui/product/add_product_screen.dart';
 
 import '../../core/const/sort_consts.dart';
 import '../../core/model/toothpaste_product.dart';
+import '../product/edit_product_screen.dart';
 import '../styles/text_styles.dart';
 import '../widget/product/toothpaste_card.dart';
 
@@ -21,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   SortOption? _selectedSortOption;
+  final AutoScrollController _autoScrollController = AutoScrollController();
   late Future<List<ToothpasteProduct>> _productListFuture;
   List<ToothpasteProduct> _products = [];
   final ProductSort _productSort = ProductSort();
@@ -45,7 +48,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  _useGlobalSortParameter(){
+  void scrollToProductIndex(int index) {
+    _autoScrollController.scrollToIndex(index,
+        preferPosition: AutoScrollPosition.begin);
+  }
+
+  _useGlobalSortParameter() {
     handleSortChange(true, GlobalSortOption.globalSortOption);
   }
 
@@ -61,7 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => const AddProductScreen()))
+              .push(MaterialPageRoute(
+                  builder: (context) => const AddProductScreen()))
               .then((value) {
             setState(() {
               _productListFuture = ProductService().getToothpasteProductList();
@@ -100,52 +109,80 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               const Spacer(),
-              TextButton.icon(onPressed: () async {
-                listOfLists.add(ExcelExportConst.excelHeaders);
-                for (var product in await _productListFuture) {
-                  listOfLists.add(product.toCSV());
-                }
-                exportCSV.myCSV(ExcelExportConst.excelHeaders, listOfLists);
-              }, icon: const Icon(Icons.download, size: 20,), label: const Text("Eskporter til CSV", style: TextStyle(fontSize: 12),))
+              TextButton.icon(
+                  onPressed: () async {
+                    listOfLists.add(ExcelExportConst.excelHeaders);
+                    for (var product in await _productListFuture) {
+                      listOfLists.add(product.toCSV());
+                    }
+                    exportCSV.myCSV(ExcelExportConst.excelHeaders, listOfLists);
+                  },
+                  icon: const Icon(
+                    Icons.download,
+                    size: 20,
+                  ),
+                  label: const Text(
+                    "Eskporter til CSV",
+                    style: TextStyle(fontSize: 12),
+                  ))
             ],
           ),
         ),
         Container(
-          height: MediaQuery.of(context).size.height / 1.25,
+          height: MediaQuery.of(context).size.height / 1.3,
           margin: const EdgeInsets.fromLTRB(300, 50, 300, 50),
-          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.withOpacity(0.25)),
-            borderRadius: BorderRadius.circular(20)
-          ),
+              border: Border.all(color: Colors.grey.withOpacity(0.25)),
+              borderRadius: BorderRadius.circular(20)),
           child: FutureBuilder(
-              future: _productListFuture,
-              builder: (BuildContext context, AsyncSnapshot<List<ToothpasteProduct>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No data available'));
-                } else {
-                  _products = snapshot.data!;
-                  if (_selectedSortOption != null) {
-                    _productSort.sortProducts(_products, _selectedSortOption);
-                  }
-                  return ListView.separated(
-                    itemCount: _products.length,
-                    itemBuilder: (context, index) {
-                      return ToothpasteCard(toothpasteProduct: _products[index]);
-                    }, separatorBuilder: (BuildContext context, int index) {
-                      return Divider(
-                        color: Colors.grey.withOpacity(0.25),
-                      );
-                  },
-                  );
+            future: _productListFuture,
+            builder: (BuildContext context,
+                AsyncSnapshot<List<ToothpasteProduct>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(child: Text('No data available'));
+              } else {
+                _products = snapshot.data!;
+                if (_selectedSortOption != null) {
+                  _productSort.sortProducts(_products, _selectedSortOption);
                 }
-              },
-            ),
+                return ListView.separated(
+                  controller: _autoScrollController,
+                  itemCount: _products.length,
+                  itemBuilder: (context, index) {
+                    return AutoScrollTag(
+                        key: ValueKey(index),
+                        controller: _autoScrollController,
+                        index: index,
+                        highlightColor: Colors.black.withOpacity(0.1),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        EditProductScreen(_products[index])))
+                                .then((value) {
+                              scrollToProductIndex(index);
+
+                            });
+                          },
+                          child: ToothpasteCard(
+                              toothpasteProduct: _products[index]),
+                        ));
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return Divider(
+                      color: Colors.grey.withOpacity(0.25),
+                    );
+                  },
+                );
+              }
+            },
           ),
+        ),
       ],
     );
   }
