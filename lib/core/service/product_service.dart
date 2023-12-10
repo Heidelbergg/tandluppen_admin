@@ -49,7 +49,6 @@ class ProductService {
       TextEditingController linkController,
       TextEditingController descriptionController,
       TextEditingController flourContentController,
-      TextEditingController usageController,
       TextEditingController rdaController,
       TextEditingController effectController,
       TextEditingController resultController,
@@ -64,7 +63,6 @@ class ProductService {
       linkController.text = toothpasteProduct.link;
       descriptionController.text = toothpasteProduct.description;
       flourContentController.text = toothpasteProduct.flouride;
-      usageController.text = toothpasteProduct.usage;
       rdaController.text = toothpasteProduct.rda;
       effectController.text = toothpasteProduct.effect;
       resultController.text = toothpasteProduct.effectDuration;

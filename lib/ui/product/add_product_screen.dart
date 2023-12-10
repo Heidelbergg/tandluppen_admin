@@ -2,6 +2,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker_web/image_picker_web.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:multi_select_flutter/util/multi_select_list_type.dart';
+import 'package:tandluppen_web/core/const/anvendelse_consts.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product.dart';
 import 'package:tandluppen_web/core/service/product_image_service.dart';
 import 'package:tandluppen_web/core/service/product_service.dart';
@@ -26,7 +30,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
   TextEditingController linkController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController flourContentController = TextEditingController();
-  TextEditingController usageController = TextEditingController();
   TextEditingController rdaController = TextEditingController();
   TextEditingController effectController = TextEditingController();
   TextEditingController resultController = TextEditingController();
@@ -39,6 +42,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Uint8List? _image;
   bool _hasImage = false;
   bool _isHovered = false;
+
+  List<String> _anvendelseList = [];
 
   Future getImage() async {
     final image = await ImagePickerWeb.getImageAsBytes();
@@ -236,9 +241,22 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: usageController,
-                      decoration: textFieldNotRequiredInputDecoration("Anvendelse"),
+                    child: MultiSelectDialogField(
+                      title: const Text("Anvendelse"),
+                      confirmText: const Text("Ok"),
+                      cancelText: const Text("Annuller"),
+                      buttonText: const Text("Anvendelse"),
+                      buttonIcon: const Icon(Icons.add_circle_outline),
+                      decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10)), color: const Color(0xFFFF6624).withOpacity(0.05)),
+                      selectedColor: const Color(0xFFFF6624),
+                      items: AnvendelseConsts.anvendelseConsts.map((e) => MultiSelectItem(e, e)).toList(),
+                      listType: MultiSelectListType.LIST,
+                      onConfirm: (values) {
+                        setState(() {
+                          _anvendelseList = values;
+                          print(_anvendelseList);
+                        });
+                      },
                     ),
                   ),
                 ),
@@ -302,7 +320,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     linkController.text,
                     descriptionController.text,
                     flourContentController.text,
-                    usageController.text,
+                   _anvendelseList,
                     rdaController.text,
                     effectController.text,
                     resultController.text,
@@ -328,7 +346,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       String link,
       String description,
       String flourContent,
-      String usage,
+      List<String> usage,
       String rda,
       String effect,
       String result,

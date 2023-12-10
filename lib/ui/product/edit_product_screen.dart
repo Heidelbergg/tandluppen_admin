@@ -2,9 +2,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker_web/image_picker_web.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product.dart';
 import 'package:tandluppen_web/core/service/product_service.dart';
 
+import '../../core/const/anvendelse_consts.dart';
 import '../../core/service/product_image_service.dart';
 import '../../core/util/validator/validator.dart';
 import '../home/home_screen.dart';
@@ -27,7 +31,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   TextEditingController linkController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController flourContentController = TextEditingController();
-  TextEditingController usageController = TextEditingController();
   TextEditingController rdaController = TextEditingController();
   TextEditingController effectController = TextEditingController();
   TextEditingController resultController = TextEditingController();
@@ -46,6 +49,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
   bool _hasImage = false;
   bool _isHovered = false;
 
+  List<dynamic> _anvendelseList = [];
+
   @override
   void initState() {
     _loadDataFromDatabase();
@@ -53,14 +58,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _loadDataFromDatabase() async {
-    await _productService.populateTextFields(
+    ToothpasteProduct? product = await  _productService.populateTextFields(
       widget.toothpasteProduct.id,
       brandController,
       manufacturerController,
       linkController,
       descriptionController,
       flourContentController,
-      usageController,
       rdaController,
       effectController,
       resultController,
@@ -68,10 +72,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
       countryCodeController
     );
     _productImageService.getImageUrl(widget.toothpasteProduct.id).then((image) {
-      setState(() {
-        _savedImage = image;
-        _hasImage = true;
-      });
+      _savedImage = image;
+      _hasImage = true;
+    });
+    setState(() {
+      _anvendelseList = product!.usage;
     });
   }
 
@@ -292,10 +297,23 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: usageController,
-                      decoration: textFieldNotRequiredInputDecoration("Anvendelse"),
-                    ),
+                    child: MultiSelectDialogField(
+                      title: const Text("Anvendelse"),
+                      confirmText: const Text("Ok"),
+                      cancelText: const Text("Annuller"),
+                      buttonText: const Text("Anvendelse"),
+                      buttonIcon: const Icon(Icons.add_circle_outline),
+                      decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10)), color: const Color(0xFFFF6624).withOpacity(0.05)),
+                      selectedColor: const Color(0xFFFF6624),
+                      items: AnvendelseConsts.anvendelseConsts.map((e) => MultiSelectItem(e, e)).toList(),
+                      listType: MultiSelectListType.LIST,
+                      initialValue: _anvendelseList,
+                      onConfirm: (values) {
+                        setState(() {
+                          _anvendelseList = values;
+                        });
+                      },
+                    )
                   ),
                 ),
                 Expanded(
@@ -359,7 +377,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     linkController.text,
                     descriptionController.text,
                     flourContentController.text,
-                    usageController.text,
+                    _anvendelseList,
                     rdaController.text,
                     effectController.text,
                     resultController.text,
@@ -386,7 +404,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       String link,
       String description,
       String flourContent,
-      String usage,
+      List<dynamic> usage,
       String rda,
       String effect,
       String result,
