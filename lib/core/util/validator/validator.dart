@@ -4,4 +4,10 @@ class ValidatorUtil{
       return "Indsæt gyldig tekst";
     }
   }
+
+  String? validateUsageItems(List<String>? items){
+    if (items!.isEmpty){
+      return "Vælg mindst én værdi fra listen";
+    }
+  }
 }

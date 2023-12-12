@@ -242,6 +242,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: MultiSelectDialogField(
+                      validator: _validatorUtil.validateUsageItems,
                       title: const Text("Anvendelse"),
                       confirmText: const Text("Ok"),
                       cancelText: const Text("Annuller"),
