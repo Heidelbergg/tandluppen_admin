@@ -5,7 +5,7 @@ class ValidatorUtil{
     }
   }
 
-  String? validateUsageItems(List<String>? items){
+  String? validateUsageItems(List<dynamic>? items){
     if (items!.isEmpty){
       return "Vælg mindst én værdi fra listen";
     }
