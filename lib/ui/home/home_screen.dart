@@ -127,59 +127,62 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        Container(
-          height: MediaQuery.of(context).size.height / 1.3,
-          margin: const EdgeInsets.fromLTRB(300, 50, 300, 50),
-          decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.withOpacity(0.25)),
-              borderRadius: BorderRadius.circular(20)),
-          child: FutureBuilder(
-            future: _productListFuture,
-            builder: (BuildContext context,
-                AsyncSnapshot<List<ToothpasteProduct>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text('No data available'));
-              } else {
-                _products = snapshot.data!;
-                if (_selectedSortOption != null) {
-                  _productSort.sortProducts(_products, _selectedSortOption);
-                }
-                return ListView.separated(
-                  controller: _autoScrollController,
-                  itemCount: _products.length,
-                  itemBuilder: (context, index) {
-                    return AutoScrollTag(
-                        key: ValueKey(index),
-                        controller: _autoScrollController,
-                        index: index,
-                        highlightColor: Colors.black.withOpacity(0.1),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        EditProductScreen(_products[index])))
-                                .then((value) {
-                              scrollToProductIndex(index);
+        FractionallySizedBox(
+          widthFactor: MediaQuery.of(context).size.width > 1000 ? 0.65 : 0.95,
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            //margin: EdgeInsets.fromLTRB(marginValue, 50, marginValue, 50),
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.withOpacity(0.25)),
+                borderRadius: BorderRadius.circular(20)),
+            child: FutureBuilder(
+              future: _productListFuture,
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<ToothpasteProduct>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No data available'));
+                } else {
+                  _products = snapshot.data!;
+                  if (_selectedSortOption != null) {
+                    _productSort.sortProducts(_products, _selectedSortOption);
+                  }
+                  return ListView.separated(
+                    controller: _autoScrollController,
+                    itemCount: _products.length,
+                    itemBuilder: (context, index) {
+                      return AutoScrollTag(
+                          key: ValueKey(index),
+                          controller: _autoScrollController,
+                          index: index,
+                          highlightColor: Colors.black.withOpacity(0.1),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          EditProductScreen(_products[index])))
+                                  .then((value) {
+                                scrollToProductIndex(index);
 
-                            });
-                          },
-                          child: ToothpasteCard(
-                              toothpasteProduct: _products[index]),
-                        ));
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return Divider(
-                      color: Colors.grey.withOpacity(0.25),
-                    );
-                  },
-                );
-              }
-            },
+                              });
+                            },
+                            child: ToothpasteCard(
+                                toothpasteProduct: _products[index]),
+                          ));
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Divider(
+                        color: Colors.grey.withOpacity(0.25),
+                      );
+                    },
+                  );
+                }
+              },
+            ),
           ),
         ),
       ],
