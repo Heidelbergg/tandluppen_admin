@@ -34,7 +34,7 @@ class _ToothpasteCardState extends State<ToothpasteCard> {
         widget.toothpasteProduct.link.contains("Opdateres") ||
         widget.toothpasteProduct.description.contains("Opdateres") ||
         widget.toothpasteProduct.flouride.contains("Opdateres") ||
-        widget.toothpasteProduct.countryCode.contains("Opdateres") ||
+        widget.toothpasteProduct.usage.isEmpty ||
         widget.toothpasteProduct.ingredients.contains("Opdateres")) {
       setState(() {
         dataMissing = true;
