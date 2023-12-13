@@ -62,7 +62,7 @@ class ProductService {
       manufacturerController.text = toothpasteProduct.manufacturer;
       linkController.text = toothpasteProduct.link;
       descriptionController.text = toothpasteProduct.description;
-      flourContentController.text = toothpasteProduct.flouride;
+      flourContentController.text = toothpasteProduct.flouride.toString();
       rdaController.text = toothpasteProduct.rda;
       effectController.text = toothpasteProduct.effect;
       resultController.text = toothpasteProduct.effectDuration;
