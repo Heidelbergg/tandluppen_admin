@@ -30,3 +30,5 @@ TextStyle extraSmallGreyTextStyle = TextStyle(fontSize: 12, fontWeight: FontWeig
 
 TextStyle mediumBlackTextStyle = const TextStyle(color: Colors.black, fontSize: 16);
 
+TextStyle mediumRedBoldTextStyle = const TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.w900);
+

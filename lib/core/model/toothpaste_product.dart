@@ -77,4 +77,9 @@ class ToothpasteProduct {
       ...ingredients.map((ingredient) => '$ingredient'),
     ];
   }
+
+  @override
+  String toString() {
+    return "$id\n$brand\n$manufacturer\n$link\n$description\n$flouride\n$usage\n$rda\n$effectDuration\n$effect\n$countryCode\n$ingredients";
+  }
 }

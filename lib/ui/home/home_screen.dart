@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:tandluppen_web/core/const/excel_export_consts.dart';
+import 'package:tandluppen_web/core/const/firestore_consts.dart';
 import 'package:tandluppen_web/core/const/sort_selection_const.dart';
 import 'package:tandluppen_web/core/service/product_service.dart';
 import 'package:tandluppen_web/core/util/sorting/product_sorting/product_sort.dart';
@@ -34,9 +35,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-
+    _doSome();
     _useGlobalSortParameter();
     _productListFuture = ProductService().getToothpasteProductList();
+  }
+
+  void _doSome() async {
+    var docs =   await  FirestoreConsts.firestoreToothpasteCollection.get();
+    for (var doc in docs.docs){
+      if (doc.data()['flouride'] == ""){
+        await FirestoreConsts.firestoreToothpasteCollection.doc(doc.id).update({
+          'flouride': null
+        });
+      }
+    }
+
   }
 
   void handleSortChange(bool selected, SortOption option) {
@@ -146,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text('No data available'));
-                } else {
+                } else if (snapshot.connectionState == ConnectionState.done) {
                   _products = snapshot.data!;
                   if (_selectedSortOption != null) {
                     _productSort.sortProducts(_products, _selectedSortOption);
@@ -181,6 +194,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                   );
+                } else {
+                  return Container();
                 }
               },
             ),

@@ -244,7 +244,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: MultiSelectDialogField(
                       validator: _validatorUtil.validateUsageItems,
-                      title: const Text.rich(
+                      title: const Text("Anvendelse"),
+                      confirmText: const Text("Ok"),
+                      cancelText: const Text("Annuller"),
+                      dialogHeight: MediaQuery.of(context).size.height / 2,
+                      dialogWidth: MediaQuery.of(context).size.width / 2,
+                      buttonText:  const Text.rich(
                         TextSpan(
                             text: "Anvendelse",
                             style: TextStyle(color: Colors.black),
@@ -256,9 +261,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                   ))
                             ]),
                       ),
-                      confirmText: const Text("Ok"),
-                      cancelText: const Text("Annuller"),
-                      buttonText: const Text("Anvendelse"),
                       buttonIcon: const Icon(Icons.keyboard_arrow_down),
                       decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10)), color: const Color(0xFFFF6624).withOpacity(0.05)),
                       selectedColor: const Color(0xFFFF6624),

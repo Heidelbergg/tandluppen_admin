@@ -3,6 +3,7 @@ import 'package:tandluppen_web/core/const/firestore_consts.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product.dart';
 import 'package:tandluppen_web/core/service/product_image_service.dart';
 import 'package:uuid/uuid.dart';
+import 'package:validators/validators.dart';
 
 class ProductService {
   Future<void> storeProductToFirestore(
@@ -89,8 +90,7 @@ class ProductService {
     }
   }
 
-  Future<void> deleteFirestoreProduct(
-      ToothpasteProduct toothpasteProduct, String? savedImage) async {
+  Future<void> deleteFirestoreProduct(ToothpasteProduct toothpasteProduct, String? savedImage) async {
     var collection = await FirestoreConsts.firestoreToothpasteCollection.get();
     for (var doc in collection.docs) {
       if (doc.data()['id'] == toothpasteProduct.id) {
@@ -102,5 +102,33 @@ class ProductService {
     if (savedImage != null) {
       await ProductImageService().deletePicture(toothpasteProduct.id);
     }
+  }
+
+  List<String> checkIfDataMissing(ToothpasteProduct toothpasteProduct) {
+    List<String> missingData = [];
+
+    if (toothpasteProduct.brand == "Opdateres") {
+      missingData.add("Mærke mangler");
+    }
+    if (toothpasteProduct.manufacturer == "Opdateres") {
+      missingData.add("Manufacturer mangler");
+    }
+    if (toothpasteProduct.link == "Opdateres") {
+      missingData.add("Link mangler");
+    }
+    if (toothpasteProduct.description == "Opdateres") {
+      missingData.add("Beskrivelse mangler");
+    }
+    if (!isNumeric(toothpasteProduct.flouride.toString())) {
+      missingData.add("Flourindhold mangler");
+    }
+    if (toothpasteProduct.usage.isEmpty) {
+      missingData.add("Anvendelse mangler");
+    }
+    if (toothpasteProduct.ingredients.contains("Opdateres")) {
+      missingData.add("Ingredienser mangler");
+    }
+
+    return missingData;
   }
 }

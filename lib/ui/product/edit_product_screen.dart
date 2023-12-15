@@ -7,6 +7,7 @@ import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product.dart';
 import 'package:tandluppen_web/core/service/product_service.dart';
+import 'package:validators/validators.dart';
 
 import '../../core/const/anvendelse_consts.dart';
 import '../../core/service/product_image_service.dart';
@@ -37,7 +38,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
   TextEditingController ingredientsController = TextEditingController();
   TextEditingController countryCodeController = TextEditingController();
 
-
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
   final ProductService _productService = ProductService();
   final ProductImageService _productImageService = ProductImageService();
@@ -50,40 +50,43 @@ class _EditProductScreenState extends State<EditProductScreen> {
   bool _isHovered = false;
 
   List<dynamic> _anvendelseList = [];
+  List<String> _missingData = [];
 
   @override
   void initState() {
     _loadDataFromDatabase();
+    _getMissingData();
     super.initState();
   }
 
   void _loadDataFromDatabase() async {
-    ToothpasteProduct? product = await  _productService.populateTextFields(
-      widget.toothpasteProduct.id,
-      brandController,
-      manufacturerController,
-      linkController,
-      descriptionController,
-      flourContentController,
-      rdaController,
-      effectController,
-      resultController,
-      ingredientsController,
-      countryCodeController
-    );
+    ToothpasteProduct? product = await _productService.populateTextFields(
+        widget.toothpasteProduct.id,
+        brandController,
+        manufacturerController,
+        linkController,
+        descriptionController,
+        flourContentController,
+        rdaController,
+        effectController,
+        resultController,
+        ingredientsController,
+        countryCodeController);
     _productImageService.getImageUrl(widget.toothpasteProduct.id).then((image) {
       _savedImage = image;
       _hasImage = true;
     });
     setState(() {
-      _anvendelseList = product!.usage;
+      if (product!.usage.isNotEmpty) {
+        _anvendelseList = product.usage;
+      }
     });
   }
 
   Future getImage() async {
     final image = await ImagePickerWeb.getImageAsBytes();
     setState(() {
-      if (image != null){
+      if (image != null) {
         _savedImage = null;
         _image = image;
         _hasImage = true;
@@ -91,33 +94,46 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
   }
 
+  List<String> _getMissingData() {
+    return _missingData =
+        _productService.checkIfDataMissing(widget.toothpasteProduct);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Rediger tandpasta", style: TextStyle(color: Colors.white),),
+        title: const Text(
+          "Rediger tandpasta",
+          style: TextStyle(color: Colors.white),
+        ),
         elevation: 3,
         backgroundColor: const Color(0xFFFF6624),
-        leading: const BackButton(color: Colors.white,),
+        leading: const BackButton(
+          color: Colors.white,
+        ),
       ),
-      body: _buildToothPaste(),
+      body: _buildToothPasteScreen(),
     );
   }
 
-  Widget _buildToothPaste() {
+  Widget _buildToothPasteScreen() {
     return FutureBuilder(
-        future:
-            ProductService().findToothpasteProduct(widget.toothpasteProduct.id),
-        builder:
-            (BuildContext context, AsyncSnapshot<ToothpasteProduct?> snapshot) {
-          if (snapshot.hasData) {
-            return _buildToothPasteForm(snapshot.data!);
-          } else if (snapshot.hasError) {
-            return Center(child: Text(snapshot.data!.toString()));
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        });
+      future:
+          ProductService().findToothpasteProduct(widget.toothpasteProduct.id),
+      builder:
+          (BuildContext context, AsyncSnapshot<ToothpasteProduct?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData && snapshot.data != null) {
+          return _buildToothPasteForm(snapshot.data!);
+        } else {
+          return const Center(child: Text('No data available'));
+        }
+      },
+    );
   }
 
   Widget _buildToothPasteForm(ToothpasteProduct toothpasteProduct) {
@@ -125,11 +141,45 @@ class _EditProductScreenState extends State<EditProductScreen> {
       padding: const EdgeInsets.all(16.0),
       margin: const EdgeInsets.only(left: 150, right: 150),
       child: Form(
-        key: _key,
-        child: ListView(
-          shrinkWrap: true,
-          children: _buildForm(),
-        )
+          key: _key,
+          child: ListView(
+            shrinkWrap: true,
+            children: _buildForm(),
+          )),
+    );
+  }
+
+  Widget _buildMissingDataColumn() {
+    return Container(
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.black.withOpacity(0.25)),
+          borderRadius: BorderRadius.circular(10)),
+      child: Column(
+        children: [
+          Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  "Manglende oplysninger",
+                  style: mediumRedBoldTextStyle,
+                ),
+              )),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _missingData.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Text(
+                  _missingData[index],
+                  style: const TextStyle(color: Colors.red),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -140,12 +190,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
         decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10)),
-            color: Colors.white
-        ),
+            color: Colors.white),
         child: Column(
           children: [
-            Align(alignment: Alignment.centerLeft, child: Padding(padding: EdgeInsets.all(8), child: Text("Generelle oplysninger", style: largeBlackTextStyle,),)),
+            Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    "Generelle oplysninger",
+                    style: largeBlackTextStyle,
+                  ),
+                )),
             const SizedBox(height: 20),
+            _missingData.isNotEmpty ? _buildMissingDataColumn() : Container(),
+            const SizedBox(height: 40),
             Row(
               children: [
                 Expanded(
@@ -170,7 +229,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
@@ -180,74 +241,81 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 maxLines: 5,
               ),
             ),
-            const SizedBox(height: 10,),
-            _hasImage ? SizedBox(
-              height: 250,
-              child: InkWell(
-                onTap: () {
-                  setState(() {
-                    _image = null;
-                    _hasImage = false;
-                    _savedImage = null;
-                  });
-                },
-                onHover: (value) {
-                  setState(() {
-                    _isHovered = value;
-                  });
-                },
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    if (_hasImage)
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: _savedImage != null ? Image.network(_savedImage!) : Image.memory(_image!),
-                      ),
-                    if (_isHovered && _hasImage)
-                      Positioned(
-                        top: 30,
-                        right: 2.5,
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _image = null;
-                              _savedImage = null;
-                              _hasImage = false;
-                            });
-                          },
-                          icon: const Icon(Icons.delete_forever_outlined, color: Colors.red),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ) :
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: InkWell(
-                  onTap: getImage,
-                  child: Container(
-                    height: 300,
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(Radius.circular(10)),
-                        color: Colors.grey.withOpacity(0.1)
-                    ),
-                    child: const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+            const SizedBox(
+              height: 10,
+            ),
+            _hasImage
+                ? SizedBox(
+                    height: 250,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _image = null;
+                          _hasImage = false;
+                          _savedImage = null;
+                        });
+                      },
+                      onHover: (value) {
+                        setState(() {
+                          _isHovered = value;
+                        });
+                      },
+                      child: Stack(
+                        alignment: Alignment.center,
                         children: [
-                          Icon(Icons.image_search_rounded),
-                          Text("Klik for at uploade et billede")
+                          if (_hasImage)
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: _savedImage != null
+                                  ? Image.network(_savedImage!)
+                                  : Image.memory(_image!),
+                            ),
+                          if (_isHovered && _hasImage)
+                            Positioned(
+                              top: 30,
+                              right: 2.5,
+                              child: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _image = null;
+                                    _savedImage = null;
+                                    _hasImage = false;
+                                  });
+                                },
+                                icon: const Icon(Icons.delete_forever_outlined,
+                                    color: Colors.red),
+                              ),
+                            ),
                         ],
                       ),
                     ),
-
-                  )),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: InkWell(
+                        onTap: getImage,
+                        child: Container(
+                          height: 300,
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)),
+                              color: Colors.grey.withOpacity(0.1)),
+                          child: const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.image_search_rounded),
+                                Text("Klik for at uploade et billede")
+                              ],
+                            ),
+                          ),
+                        )),
+                  ),
+            const SizedBox(
+              height: 10,
             ),
-            const SizedBox(height: 10,),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
@@ -259,16 +327,25 @@ class _EditProductScreenState extends State<EditProductScreen> {
           ],
         ),
       ),
-      const SizedBox(height: 20,),
+      const SizedBox(
+        height: 20,
+      ),
       Container(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
         decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10)),
-            color: Colors.white
-        ),
+            color: Colors.white),
         child: Column(
           children: [
-            Align(alignment: Alignment.centerLeft, child: Padding(padding: const EdgeInsets.all(8), child: Text("Egenskaber", style: largeBlackTextStyle,),)),
+            Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
+                    "Egenskaber",
+                    style: largeBlackTextStyle,
+                  ),
+                )),
             Row(
               children: [
                 Expanded(
@@ -297,37 +374,43 @@ class _EditProductScreenState extends State<EditProductScreen> {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: MultiSelectDialogField(
-                      validator: _validatorUtil.validateUsageItems,
-                      title: const Text.rich(
-                        TextSpan(
-                            text: "Anvendelse",
-                            style: TextStyle(color: Colors.black),
-                            children: [
-                              TextSpan(
-                                  text: ' *',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                  ))
-                            ]),
-                      ),
-                      confirmText: const Text("Ok"),
-                      cancelText: const Text("Annuller"),
-                      buttonText: const Text("Anvendelse"),
-                      buttonIcon: const Icon(Icons.keyboard_arrow_down),
-                      decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10)), color: const Color(0xFFFF6624).withOpacity(0.05)),
-                      selectedColor: const Color(0xFFFF6624),
-                      items: AnvendelseConsts.anvendelseConsts.map((e) => MultiSelectItem(e, e)).toList(),
-                      listType: MultiSelectListType.LIST,
-                      initialValue: _anvendelseList,
-                      onConfirm: (values) {
-                        setState(() {
-                          _anvendelseList = values;
-                        });
-                      },
-                    )
-                  ),
+                      padding: const EdgeInsets.all(8.0),
+                      child: MultiSelectDialogField(
+                        validator: _validatorUtil.validateUsageItems,
+                        title: const Text("Anvendelse"),
+                        confirmText: const Text("Ok"),
+                        cancelText: const Text("Annuller"),
+                        dialogHeight: MediaQuery.of(context).size.height / 2,
+                        dialogWidth: MediaQuery.of(context).size.width / 2,
+                        buttonText: const Text.rich(
+                          TextSpan(
+                              text: "Anvendelse",
+                              style: TextStyle(color: Colors.black),
+                              children: [
+                                TextSpan(
+                                    text: ' *',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                    ))
+                              ]),
+                        ),
+                        buttonIcon: const Icon(Icons.keyboard_arrow_down),
+                        decoration: BoxDecoration(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10)),
+                            color: const Color(0xFFFF6624).withOpacity(0.05)),
+                        selectedColor: const Color(0xFFFF6624),
+                        items: AnvendelseConsts.anvendelseConsts
+                            .map((e) => MultiSelectItem(e, e))
+                            .toList(),
+                        listType: MultiSelectListType.LIST,
+                        initialValue: _anvendelseList,
+                        onConfirm: (values) {
+                          setState(() {
+                            _anvendelseList = values;
+                          });
+                        },
+                      )),
                 ),
                 Expanded(
                   child: Padding(
@@ -347,7 +430,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: resultController,
-                      decoration: textFieldNotRequiredInputDecoration("Virkning"),
+                      decoration:
+                          textFieldNotRequiredInputDecoration("Virkning"),
                     ),
                   ),
                 ),
@@ -400,7 +484,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
               }
             },
             style: greenButtonStyle,
-            child: const Text('Opdater produkt', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20),),
+            child: const Text(
+              'Opdater produkt',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 20),
+            ),
           ),
         ],
       ),
@@ -424,11 +514,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
       String ingredients,
       String countryCode,
       Uint8List? image) async {
-    showDialog(context: context, builder: (BuildContext context){
-      return const AlertDialog(
-        content: LinearProgressIndicator(),
-      );
-    });
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+            content: LinearProgressIndicator(),
+          );
+        });
 
     List ingredientsList = ingredients.trim().split(",");
 
@@ -447,7 +539,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         ingredients: ingredientsList);
 
     await _productService.updateFirestoreProduct(toothpasteProduct);
-    if (_image != null){
+    if (_image != null) {
       await _productImageService.storeProductImageToStorage(_image, id);
     }
     Navigator.pop(context);
