@@ -122,6 +122,9 @@ class ProductService {
     if (!isNumeric(toothpasteProduct.flouride.toString())) {
       missingData.add("Flourindhold mangler");
     }
+    if (toothpasteProduct.flouride == 1) {
+      missingData.add("Flourindhold skal opdateres");
+    }
     if (toothpasteProduct.usage.isEmpty) {
       missingData.add("Anvendelse mangler");
     }
