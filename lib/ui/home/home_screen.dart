@@ -35,21 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _doSome();
     _useGlobalSortParameter();
     _productListFuture = ProductService().getToothpasteProductList();
-  }
-
-  void _doSome() async {
-    var docs =   await  FirestoreConsts.firestoreToothpasteCollection.get();
-    for (var doc in docs.docs){
-      if (doc.data()['flouride'] == ""){
-        await FirestoreConsts.firestoreToothpasteCollection.doc(doc.id).update({
-          'flouride': null
-        });
-      }
-    }
-
   }
 
   void handleSortChange(bool selected, SortOption option) {
