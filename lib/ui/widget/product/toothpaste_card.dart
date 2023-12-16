@@ -24,7 +24,7 @@ class _ToothpasteCardState extends State<ToothpasteCard> {
         .getImageUrl(widget.toothpasteProduct.id)
         .then((value) {
       setState(() {
-        if (value != null){
+        if (value != null) {
           imageUrl = value;
         }
       });
@@ -38,7 +38,8 @@ class _ToothpasteCardState extends State<ToothpasteCard> {
   }
 
   Future<List<String>> _checkMissingProductInfo() async {
-    List<String> missingData = _productService.checkIfDataMissing(widget.toothpasteProduct);
+    List<String> missingData =
+        _productService.checkIfDataMissing(widget.toothpasteProduct);
     setState(() {
       missingData.isNotEmpty ? dataMissing = true : dataMissing = false;
     });
@@ -57,25 +58,25 @@ class _ToothpasteCardState extends State<ToothpasteCard> {
                   Text(widget.toothpasteProduct.brand),
                   dataMissing!
                       ? const Padding(
-                    padding: EdgeInsets.only(left: 10),
-                    child: Icon(
-                      Icons.error,
-                      color: Colors.red,
-                      semanticLabel: "Data mangler",
-                    ),
-                  )
+                          padding: EdgeInsets.only(left: 10),
+                          child: Icon(
+                            Icons.error,
+                            color: Colors.red,
+                          ),
+                        )
                       : Container()
                 ],
               ),
-              subtitle: Text(widget.toothpasteProduct.manufacturer),
+              subtitle: Text("${widget.toothpasteProduct.manufacturer} - ${widget.toothpasteProduct.countryCode}"),
               trailing: IconButton(
                   onPressed: () async {
-                    await _productService
-                        .deleteFirestoreProduct(widget.toothpasteProduct, imageUrl);
+                    await _productService.deleteFirestoreProduct(
+                        widget.toothpasteProduct, imageUrl);
                     Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const HomeScreen()),
-                            (route) => false);
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen()),
+                        (route) => false);
                   },
                   icon: const Icon(
                     Icons.delete,
@@ -93,9 +94,9 @@ class _ToothpasteCardState extends State<ToothpasteCard> {
               ),
             );
           } else if (snapshot.hasError) {
-            return Icon(Icons.error_outline);
+            return const Icon(Icons.error_outline);
           } else {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
         });
   }

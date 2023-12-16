@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 5, right: 10),
+                padding: const EdgeInsets.only(left: 5, right: 5),
                 child: ChoiceChip(
                   label: const Text("Manufacturer"),
                   selected: _selectedSortOption == SortOption.manufacturer,
@@ -102,11 +102,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: ChoiceChip(
+                  label: const Text("Brand"),
+                  selected: _selectedSortOption == SortOption.brand,
+                  onSelected: (selected) {
+                    handleSortChange(selected, SortOption.brand);
+                  },
+                ),
+              ),
               ChoiceChip(
-                label: const Text("Brand"),
-                selected: _selectedSortOption == SortOption.brand,
+                label: const Text("Country Code"),
+                selected: _selectedSortOption == SortOption.countryCode,
                 onSelected: (selected) {
-                  handleSortChange(selected, SortOption.brand);
+                  handleSortChange(selected, SortOption.countryCode);
                 },
               ),
               const Spacer(),
