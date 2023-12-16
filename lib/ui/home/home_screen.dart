@@ -182,6 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               });
                             },
                             child: ToothpasteCard(
+                                key: ValueKey(_products[index].id),
                                 toothpasteProduct: _products[index]),
                           ));
                     },

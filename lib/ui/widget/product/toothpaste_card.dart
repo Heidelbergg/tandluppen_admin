@@ -19,6 +19,12 @@ class _ToothpasteCardState extends State<ToothpasteCard> {
   bool? dataMissing;
   final ProductService _productService = ProductService();
 
+  @override
+  void initState() {
+    _getImageUrl();
+    super.initState();
+  }
+
   void _getImageUrl() async {
     ProductImageService()
         .getImageUrl(widget.toothpasteProduct.id)
@@ -29,12 +35,6 @@ class _ToothpasteCardState extends State<ToothpasteCard> {
         }
       });
     });
-  }
-
-  @override
-  void initState() {
-    _getImageUrl();
-    super.initState();
   }
 
   Future<List<String>> _checkMissingProductInfo() async {
