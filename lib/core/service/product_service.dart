@@ -128,7 +128,7 @@ class ProductService {
     if (toothpasteProduct.usage.isEmpty) {
       missingData.add("Anvendelse mangler");
     }
-    if (toothpasteProduct.ingredients.contains("Opdateres")) {
+    if (toothpasteProduct.ingredients.contains("Opdateres") || toothpasteProduct.ingredients.contains(" ")) {
       missingData.add("Ingredienser mangler");
     }
 

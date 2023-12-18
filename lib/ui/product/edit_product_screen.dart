@@ -255,22 +255,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           _savedImage = null;
                         });
                       },
-                      onHover: (value) {
-                        setState(() {
-                          _isHovered = value;
-                        });
-                      },
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          if (_hasImage)
                             ClipRRect(
                               borderRadius: BorderRadius.circular(20),
                               child: _savedImage != null
                                   ? Image.network(_savedImage!)
                                   : Image.memory(_image!),
                             ),
-                          if (_isHovered && _hasImage)
                             Positioned(
                               top: 30,
                               right: 2.5,
