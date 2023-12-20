@@ -29,14 +29,34 @@ class _HomeScreenState extends State<HomeScreen> {
   List<ToothpasteProduct> _products = [];
   final ProductSort _productSort = ProductSort();
 
+  bool loading = true;
+
   // Export to CSV
   List<List<String>> listOfLists = [];
 
   @override
   void initState() {
     super.initState();
+    _loadProductsAndSetSortOption(null);
+  }
+
+  _loadProductsAndSetSortOption(String? productId) async {
     _useGlobalSortParameter();
     _productListFuture = ProductService().getToothpasteProductList();
+    _products = await _productListFuture;
+    if (_selectedSortOption != null) {
+      _productSort.sortProducts(_products, _selectedSortOption);
+    }
+    _finishLoading(productId);
+  }
+
+  void _finishLoading(String? productId){
+    setState(() {
+      loading = false;
+    });
+    if (productId != null){
+      scrollToProductIndex(productId);
+    }
   }
 
   void handleSortChange(bool selected, SortOption option) {
@@ -49,9 +69,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void scrollToProductIndex(int index) {
+  void scrollToProductIndex(String productId) {
+    int index = _products.indexWhere((product) => product.id == productId);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(index.toString()),));
     _autoScrollController.scrollToIndex(index,
-        preferPosition: AutoScrollPosition.begin);
+        preferPosition: AutoScrollPosition.begin,
+      duration: const Duration(milliseconds: 500)
+    );
   }
 
   _useGlobalSortParameter() {
@@ -74,7 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context) => const AddProductScreen()))
               .then((value) {
             setState(() {
-              _productListFuture = ProductService().getToothpasteProductList();
+             if (value != null){
+               _loadProductsAndSetSortOption(value);
+             }
             });
           });
         },
@@ -142,61 +168,41 @@ class _HomeScreenState extends State<HomeScreen> {
           widthFactor: MediaQuery.of(context).size.width > 1000 ? 0.65 : 0.95,
           child: Container(
             height: MediaQuery.of(context).size.height,
-            //margin: EdgeInsets.fromLTRB(marginValue, 50, marginValue, 50),
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.withOpacity(0.25)),
                 borderRadius: BorderRadius.circular(20)),
-            child: FutureBuilder(
-              future: _productListFuture,
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<ToothpasteProduct>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No data available'));
-                } else if (snapshot.connectionState == ConnectionState.done) {
-                  _products = snapshot.data!;
-                  if (_selectedSortOption != null) {
-                    _productSort.sortProducts(_products, _selectedSortOption);
-                  }
-                  return ListView.separated(
+            child: loading? const Center(child: CircularProgressIndicator()) : ListView.separated(
+              controller: _autoScrollController,
+              itemCount: _products.length,
+              itemBuilder: (context, index) {
+                return AutoScrollTag(
+                    key: ValueKey(index),
                     controller: _autoScrollController,
-                    itemCount: _products.length,
-                    itemBuilder: (context, index) {
-                      return AutoScrollTag(
-                          key: ValueKey(index),
-                          controller: _autoScrollController,
-                          index: index,
-                          highlightColor: Colors.black.withOpacity(0.1),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.of(context)
-                                  .push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          EditProductScreen(_products[index])))
-                                  .then((value) {
-                                scrollToProductIndex(index);
-
-                              });
-                            },
-                            child: ToothpasteCard(
-                                key: ValueKey(_products[index].id),
-                                toothpasteProduct: _products[index]),
-                          ));
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return Divider(
-                        color: Colors.grey.withOpacity(0.25),
-                      );
-                    },
-                  );
-                } else {
-                  return Container();
-                }
+                    index: index,
+                    highlightColor: Colors.black.withOpacity(0.1),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(
+                            builder: (context) =>
+                                EditProductScreen(_products[index])))
+                            .then((value) async {
+                              if (value != null){
+                                await _loadProductsAndSetSortOption(_products[index].id);
+                              }
+                        });
+                      },
+                      child: ToothpasteCard(
+                          key: ValueKey(_products[index].id),
+                          toothpasteProduct: _products[index]),
+                    ));
               },
-            ),
+              separatorBuilder: (BuildContext context, int index) {
+                return Divider(
+                  color: Colors.grey.withOpacity(0.25),
+                );
+              },
+            )
           ),
         ),
       ],

@@ -394,6 +394,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
     await ProductService().storeProductToFirestore(toothpasteProduct);
     if (_image != null){
       await ProductImageService().storeProductImageToStorage(_image, uuid);
-    }    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen()), (route) => false);
+    }
+    //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen()), (route) => false);
+    Navigator.pop(context);
+    Navigator.pop(context, uuid);
   }
 }

@@ -536,6 +536,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
       await _productImageService.storeProductImageToStorage(_image, id);
     }
     Navigator.pop(context);
-    Navigator.pop(context);
+    Navigator.pop(context, true);
   }
 }

@@ -1,4 +1,4 @@
-import 'package:flutter/src/widgets/editable_text.dart';
+import 'package:flutter/material.dart';
 import 'package:tandluppen_web/core/const/firestore_consts.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product.dart';
 import 'package:tandluppen_web/core/service/product_image_service.dart';
@@ -128,8 +128,11 @@ class ProductService {
     if (toothpasteProduct.usage.isEmpty) {
       missingData.add("Anvendelse mangler");
     }
-    if (toothpasteProduct.ingredients.contains("Opdateres") || toothpasteProduct.ingredients.contains(" ")) {
+    if (toothpasteProduct.ingredients.contains("Opdateres")) {
       missingData.add("Ingredienser mangler");
+    }
+    if (toothpasteProduct.ingredients.any((ingredient) => ingredient.contains(' '))){
+      missingData.add("Ingredienser indeholder mellemrum");
     }
 
     return missingData;
