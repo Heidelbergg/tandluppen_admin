@@ -77,6 +77,7 @@ class _ToothpasteCardState extends State<ToothpasteCard> {
                         MaterialPageRoute(
                             builder: (context) => const HomeScreen()),
                         (route) => false);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Produkt slettet!"), backgroundColor: Colors.green,));
                   },
                   icon: const Icon(
                     Icons.delete,
