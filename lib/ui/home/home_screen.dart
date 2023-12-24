@@ -38,6 +38,20 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadProductsAndSetSortOption(null);
+    //_dosome();
+  }
+
+  _dosome() async {
+    Map<String, dynamic> mapData = {
+      'url': 'link',
+      'isVisible': false,
+    };
+    var ref = await FirestoreConsts.firestoreToothpasteCollection.get();
+    for (var doc in ref.docs){
+      FirestoreConsts.firestoreToothpasteCollection.doc(doc.id).update({
+        'link' : mapData
+      });
+    }
   }
 
   _loadProductsAndSetSortOption(String? productId) async {
@@ -71,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void scrollToProductIndex(String productId) {
     int index = _products.indexWhere((product) => product.id == productId);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(index.toString()),));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Funktion udført!"), backgroundColor: Colors.green,));
     _autoScrollController.scrollToIndex(index,
         preferPosition: AutoScrollPosition.begin,
       duration: const Duration(milliseconds: 500)

@@ -6,6 +6,7 @@ import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product.dart';
+import 'package:tandluppen_web/core/model/toothpaste_product_link.dart';
 import 'package:tandluppen_web/core/service/product_service.dart';
 import 'package:validators/validators.dart';
 
@@ -47,7 +48,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   String? _savedImage;
 
   bool _hasImage = false;
-  bool _isHovered = false;
+  bool _linkVisible = false;
 
   List<dynamic> _anvendelseList = [];
   List<String> _missingData = [];
@@ -79,6 +80,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     setState(() {
       if (product!.usage.isNotEmpty) {
         _anvendelseList = product.usage;
+        _linkVisible = product.link.isVisible;
       }
     });
   }
@@ -309,13 +311,27 @@ class _EditProductScreenState extends State<EditProductScreen> {
             const SizedBox(
               height: 10,
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: linkController,
-                decoration: textFieldInputDecoration("Link"),
-                validator: _validatorUtil.validateName,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: linkController,
+                      decoration: textFieldInputDecoration("Link"),
+                      validator: _validatorUtil.validateName,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 8,
+                  child: CheckboxListTile(title: const Text("Synlig"), value: _linkVisible, onChanged: (bool? checked){
+                    setState(() {
+                      _linkVisible = checked!;
+                    });
+                  }),
+                )
+              ],
             ),
           ],
         ),
@@ -521,7 +537,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         id: id,
         brand: brand,
         manufacturer: manufacturer,
-        link: link,
+        link: Link(url: link, isVisible: _linkVisible),
         description: description,
         flouride: int.parse(flourContent),
         usage: usage,

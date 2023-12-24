@@ -1,8 +1,10 @@
+import 'package:tandluppen_web/core/model/toothpaste_product_link.dart';
+
 class ToothpasteProduct {
   final String id;
   final String brand;
   final String manufacturer;
-  final String link;
+  final Link link;
   final String description;
   final String rda;
   final String effectDuration;
@@ -31,7 +33,7 @@ class ToothpasteProduct {
       id: json['id'] ?? 'Opdateres',
       brand: json['brand'] ?? 'Opdateres',
       manufacturer: json['manufacturer'] ?? 'Opdateres',
-      link: json['link'] ?? 'Opdateres',
+      link: Link.fromJson(json['link']),
       description: json['description'] ?? 'Opdateres',
       flouride: json['flouride'] ?? 0,
       usage: json['usage'] ?? [],
@@ -48,7 +50,7 @@ class ToothpasteProduct {
       'id': id,
       'brand': brand,
       'manufacturer': manufacturer,
-      'link': link,
+      'link': link.toJson(),
       'description': description,
       'flouride': flouride,
       'usage': usage,
@@ -66,7 +68,7 @@ class ToothpasteProduct {
       id,
       brand,
       manufacturer,
-      link,
+      link.url,
       description,
       flouride.toString(),
       usage.toString(),

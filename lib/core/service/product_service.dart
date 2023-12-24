@@ -61,7 +61,7 @@ class ProductService {
     if (toothpasteProduct != null) {
       brandController.text = toothpasteProduct.brand;
       manufacturerController.text = toothpasteProduct.manufacturer;
-      linkController.text = toothpasteProduct.link;
+      linkController.text = toothpasteProduct.link.url;
       descriptionController.text = toothpasteProduct.description;
       flourContentController.text = toothpasteProduct.flouride.toString();
       rdaController.text = toothpasteProduct.rda;
