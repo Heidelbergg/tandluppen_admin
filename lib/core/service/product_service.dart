@@ -134,6 +134,9 @@ class ProductService {
     if (toothpasteProduct.ingredients.any((ingredient) => ingredient.contains(' '))){
       missingData.add("Ingredienser indeholder mellemrum");
     }
+    if (toothpasteProduct.link.url == "link"){
+      missingData.add("Link mangler");
+    }
 
     return missingData;
   }
