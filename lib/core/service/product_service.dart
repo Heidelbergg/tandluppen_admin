@@ -64,7 +64,7 @@ class ProductService {
       linkController.text = toothpasteProduct.link.url;
       descriptionController.text = toothpasteProduct.description;
       flourContentController.text = toothpasteProduct.flouride.toString();
-      rdaController.text = toothpasteProduct.rda;
+      rdaController.text = toothpasteProduct.rda.toString();
       effectController.text = toothpasteProduct.effect;
       resultController.text = toothpasteProduct.effectDuration;
       countryCodeController.text = toothpasteProduct.countryCode;

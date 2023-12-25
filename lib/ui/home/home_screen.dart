@@ -6,6 +6,7 @@ import 'package:tandluppen_web/core/const/sort_selection_const.dart';
 import 'package:tandluppen_web/core/service/product_service.dart';
 import 'package:tandluppen_web/core/util/sorting/product_sorting/product_sort.dart';
 import 'package:tandluppen_web/ui/product/add_product_screen.dart';
+import 'package:validators/validators.dart';
 
 import '../../core/const/sort_consts.dart';
 import '../../core/model/toothpaste_product.dart';
@@ -42,15 +43,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _dosome() async {
-    Map<String, dynamic> mapData = {
-      'url': 'link',
-      'isVisible': false,
-    };
     var ref = await FirestoreConsts.firestoreToothpasteCollection.get();
     for (var doc in ref.docs){
-      FirestoreConsts.firestoreToothpasteCollection.doc(doc.id).update({
-        'link' : mapData
-      });
+      if (doc.data()['rda'] is String && isNumeric(doc.data()['rda'])){
+        FirestoreConsts.firestoreToothpasteCollection.doc(doc.id).update({
+          'rda' : int.parse(doc.data()['rda'])
+        });
+      }
     }
   }
 

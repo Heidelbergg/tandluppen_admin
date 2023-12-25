@@ -18,4 +18,10 @@ class ValidatorUtil{
       return "Indsæt gyldigt tal";
     }
   }
+
+  String? validateNullableNumber(String? number){
+    if (!isNumeric(number!)|| int.parse(number).isNegative){
+      return "Indsæt gyldigt tal";
+    }
+  }
 }

@@ -207,8 +207,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   ),
                 ),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width / 8,
-                  child: CheckboxListTile(title: const Text("Synlig"), value: _linkVisible, onChanged: (bool? checked){
+                  width: MediaQuery.of(context).size.width / 10,
+                  child: Checkbox(value: _linkVisible, onChanged: (bool? checked){
                     setState(() {
                       _linkVisible = checked!;
                     });
@@ -246,6 +246,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
+                      validator: _validatorUtil.validateNullableNumber,
                       controller: rdaController,
                       decoration: textFieldNotRequiredInputDecoration("RDA"),
                     ),
@@ -351,7 +352,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     descriptionController.text,
                     flourContentController.text,
                    _anvendelseList,
-                    rdaController.text,
+                    rdaController.text == "" ? "0" : rdaController.text,
                     effectController.text,
                     resultController.text,
                     ingredientsController.text,
@@ -401,7 +402,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         description: description,
         flouride: int.parse(flourContent),
         usage: usage,
-        rda: rda,
+        rda: int.parse(rda),
         effect: effect,
         effectDuration: result,
         countryCode: countryCode,

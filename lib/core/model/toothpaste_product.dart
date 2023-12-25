@@ -6,11 +6,11 @@ class ToothpasteProduct {
   final String manufacturer;
   final Link link;
   final String description;
-  final String rda;
   final String effectDuration;
   final String effect;
   final String countryCode;
   final int flouride;
+  final int rda;
   final List<dynamic> usage;
   final List<dynamic> ingredients;
 
@@ -37,7 +37,7 @@ class ToothpasteProduct {
       description: json['description'] ?? 'Opdateres',
       flouride: json['flouride'] ?? 0,
       usage: json['usage'] ?? [],
-      rda: json['rda'] ?? 'Opdateres',
+      rda: json['rda'] ?? 0,
       effect: json['effect'] ?? 'Opdateres',
       effectDuration: json['effect_duration'] ?? 'Opdateres',
       ingredients: json['ingredients'] ?? [],
@@ -72,7 +72,7 @@ class ToothpasteProduct {
       description,
       flouride.toString(),
       usage.toString(),
-      rda,
+      rda.toString(),
       effectDuration,
       effect,
       countryCode,
