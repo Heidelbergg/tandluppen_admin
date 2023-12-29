@@ -6,6 +6,8 @@ TextStyle largeTextStyle = const TextStyle(color: Colors.grey, fontSize: 20);
 
 TextStyle largeBlackTextStyle = const TextStyle(color: Colors.black, fontSize: 20);
 
+TextStyle largeBoldBlackTextStyle = TextStyle(color: Colors.black.withOpacity(0.7), fontSize: 28, fontWeight: FontWeight.w900);
+
 TextStyle smallWhiteTextStyle = const TextStyle(color: Colors.white, fontSize: 12);
 
 TextStyle smallGreenTextStyle = const TextStyle(color: Color(0xFF42BEA5), fontSize: 12);
@@ -21,6 +23,8 @@ TextStyle headerTextStyle = const TextStyle(fontSize: 26, fontWeight: FontWeight
 TextStyle whiteHeaderTextStyle = const TextStyle(fontSize: 26, fontWeight: FontWeight.w600, color: Colors.white);
 
 TextStyle bodyTextStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black.withOpacity(0.5));
+
+TextStyle mediumTextStyle = TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black.withOpacity(0.5));
 
 TextStyle smallBodyTextStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black.withOpacity(0.5), height: 2);
 

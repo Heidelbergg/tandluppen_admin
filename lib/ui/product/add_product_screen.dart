@@ -8,12 +8,11 @@ import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:tandluppen_web/core/const/anvendelse_consts.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product_link.dart';
-import 'package:tandluppen_web/core/service/product_image_service.dart';
-import 'package:tandluppen_web/core/service/product_service.dart';
+import 'package:tandluppen_web/core/service/product/product_service.dart';
 import 'package:tandluppen_web/core/util/validator/validator.dart';
-import 'package:tandluppen_web/ui/home/home_screen.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../core/service/product/product_image_service.dart';
 import '../styles/button_style.dart';
 import '../styles/text_styles.dart';
 import '../styles/textfield_styles.dart';
@@ -412,7 +411,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     if (_image != null){
       await ProductImageService().storeProductImageToStorage(_image, uuid);
     }
-    //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomeScreen()), (route) => false);
     Navigator.pop(context);
     Navigator.pop(context, uuid);
   }

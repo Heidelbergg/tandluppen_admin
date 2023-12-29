@@ -64,6 +64,12 @@ dependencies:
   # Validator
   validators: ^3.0.0
 
+  # Multi dropdown
+  multi_dropdown: ^2.1.2
+
+  # Drawer
+  sidebarx: ^0.16.3
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2

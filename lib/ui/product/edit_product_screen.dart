@@ -7,13 +7,11 @@ import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product_link.dart';
-import 'package:tandluppen_web/core/service/product_service.dart';
-import 'package:validators/validators.dart';
+import 'package:tandluppen_web/core/service/product/product_service.dart';
 
 import '../../core/const/anvendelse_consts.dart';
-import '../../core/service/product_image_service.dart';
+import '../../core/service/product/product_image_service.dart';
 import '../../core/util/validator/validator.dart';
-import '../home/home_screen.dart';
 import '../styles/button_style.dart';
 import '../styles/text_styles.dart';
 import '../styles/textfield_styles.dart';

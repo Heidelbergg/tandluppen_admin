@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tandluppen_web/ui/styles/text_styles.dart';
 
 InputDecoration textFieldNotRequiredInputDecoration(String labelText) {
   return InputDecoration(
@@ -49,3 +50,11 @@ InputDecoration textFieldInputDecoration(String labelText) {
       alignLabelWithHint: true,
       floatingLabelBehavior: FloatingLabelBehavior.auto);
 }
+
+InputDecoration searchFieldInputDecoration = InputDecoration(
+    fillColor: Colors.transparent,
+    filled: true,
+    contentPadding: const EdgeInsets.only(bottom: 20, top: -15),
+    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey.withOpacity(0.5))),
+    label: Text("Søg efter produkt...", style: mediumTextStyle),
+    floatingLabelBehavior: FloatingLabelBehavior.auto);

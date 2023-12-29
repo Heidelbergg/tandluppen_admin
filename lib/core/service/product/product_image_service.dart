@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:firebase_storage/firebase_storage.dart';
 
 class ProductImageService{
@@ -20,6 +19,28 @@ class ProductImageService{
     final ref = FirebaseStorage.instance.ref('toothpasteImages/$productId');
     return await ref.getDownloadURL();
   }
+
+ /* Future<Uint8List?> getImageUrl(String productId) async {
+    final ref = FirebaseStorage.instance.ref('toothpasteImages/$productId');
+
+    try {
+      final data = await ref.getData();
+
+      if (data != null) {
+        img.Image? decodedImage = img.decodeImage(data);
+
+        if (decodedImage != null) {
+          Uint8List pngBytes = Uint8List.fromList(img.encodePng(decodedImage));
+
+          return pngBytes;
+        }
+      }
+    } catch (e) {
+      print('Error fetching or converting image: $e');
+    }
+
+    return null;
+  }*/
 
   Future deletePicture(String productId) async {
     await FirebaseStorage.instance.ref().child('toothpasteImages/$productId').delete();

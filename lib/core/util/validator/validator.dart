@@ -1,3 +1,4 @@
+import 'package:tandluppen_web/core/model/toothpaste_product.dart';
 import 'package:validators/validators.dart';
 
 class ValidatorUtil{
@@ -23,5 +24,9 @@ class ValidatorUtil{
     if (!isNumeric(number!)|| int.parse(number).isNegative){
       return "Indsæt gyldigt tal";
     }
+  }
+
+  bool validateSearchString(String query, ToothpasteProduct product){
+    return query.isNotEmpty && !product.brand.toLowerCase().contains(query.toLowerCase());
   }
 }

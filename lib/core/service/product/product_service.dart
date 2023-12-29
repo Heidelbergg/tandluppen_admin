@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tandluppen_web/core/const/firestore_consts.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product.dart';
-import 'package:tandluppen_web/core/service/product_image_service.dart';
-import 'package:uuid/uuid.dart';
+import 'package:tandluppen_web/core/service/product/product_image_service.dart';
 import 'package:validators/validators.dart';
 
 class ProductService {
@@ -34,7 +33,7 @@ class ProductService {
   }
 
   Future<ToothpasteProduct?> findToothpasteProduct(String productId) async {
-    var collection = await FirestoreConsts.firestoreToothpasteCollection.get();
+    var collection = await FirestoreConsts.firestoreToothpasteCollection.where('id', isEqualTo: productId).get();
     for (var doc in collection.docs) {
       if (doc.data()['id'] == productId) {
         return ToothpasteProduct.fromJson(doc.data());
@@ -78,9 +77,8 @@ class ProductService {
     return null;
   }
 
-  Future<void> updateFirestoreProduct(
-      ToothpasteProduct toothpasteProduct) async {
-    var collection = await FirestoreConsts.firestoreToothpasteCollection.get();
+  Future<void> updateFirestoreProduct(ToothpasteProduct toothpasteProduct) async {
+    var collection = await FirestoreConsts.firestoreToothpasteCollection.where('id', isEqualTo: toothpasteProduct.id).get();
     for (var doc in collection.docs) {
       if (doc.data()['id'] == toothpasteProduct.id) {
         await FirestoreConsts.firestoreToothpasteCollection
@@ -91,7 +89,7 @@ class ProductService {
   }
 
   Future<void> deleteFirestoreProduct(ToothpasteProduct toothpasteProduct, String? savedImage) async {
-    var collection = await FirestoreConsts.firestoreToothpasteCollection.get();
+    var collection = await FirestoreConsts.firestoreToothpasteCollection.where('id', isEqualTo: toothpasteProduct.id).get();
     for (var doc in collection.docs) {
       if (doc.data()['id'] == toothpasteProduct.id) {
         await FirestoreConsts.firestoreToothpasteCollection

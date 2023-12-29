@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product.dart';
-import 'package:tandluppen_web/core/service/product_image_service.dart';
-import 'package:tandluppen_web/core/service/product_service.dart';
+import 'package:tandluppen_web/core/service/product/product_service.dart';
 
+import '../../../core/service/product/product_image_service.dart';
 import '../../home/home_screen.dart';
 
 class ToothpasteCard extends StatefulWidget {
