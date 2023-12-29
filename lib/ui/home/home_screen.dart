@@ -151,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.grey.withOpacity(0.35),
                   borderRadius: const BorderRadius.all(Radius.circular(5))
                 ),
-                child: Center(child: Text(_products.length.toString())),
+                child: Center(child: Text(_products.length.toString(), style: mediumBlackTextStyle)),
               ),
             ],
           ),
