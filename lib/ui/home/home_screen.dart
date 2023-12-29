@@ -275,21 +275,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     selectedOptionIcon: const Icon(Icons.check_circle),
                   ),
                 ),
-                TextButton.icon(
-                    onPressed: () async {
-                      for (var product in _products) {
-                        listOfLists.add(product.toCSV());
-                      }
-                      exportCSV.myCSV(ExcelExportConst.excelHeaders, listOfLists);
-                    },
-                    icon: const Icon(
-                      Icons.download,
-                      size: 20,
-                    ),
-                    label: const Text(
-                      "Eskporter til CSV",
-                      style: TextStyle(fontSize: 12),
-                    ))
+                Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: TextButton.icon(
+                      onPressed: () async {
+                        for (var product in _products) {
+                          listOfLists.add(product.toCSV());
+                        }
+                        exportCSV.myCSV(ExcelExportConst.excelHeaders, listOfLists);
+                      },
+                      icon: const Icon(
+                        Icons.download,
+                        size: 20,
+                      ),
+                      label: const Text(
+                        "Eskporter til CSV",
+                        style: TextStyle(fontSize: 12),
+                      )),
+                )
               ],
             ),
           ),
