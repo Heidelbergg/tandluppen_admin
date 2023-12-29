@@ -17,7 +17,7 @@ class ToothpasteGuideService{
 
   Future<void> storeGuide(ToothpasteGuide toothpasteGuide) async {
     FirestoreConsts.firestoreGuidesCollection
-        .doc()
+        .doc(toothpasteGuide.id)
         .set(toothpasteGuide.toJson());
   }
 
@@ -42,5 +42,8 @@ class ToothpasteGuideService{
     return null;
   }
 
+  Future<void> updateOrder(int newOrder, String guideId) async {
+    await FirestoreConsts.firestoreGuidesCollection.doc(guideId).update({'order': newOrder});
+  }
 
 }

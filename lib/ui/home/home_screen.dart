@@ -30,7 +30,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   SortOption? _selectedSortOption;
-  final GlobalKey<ScaffoldState> _key = GlobalKey(); // Create a key
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
   final AutoScrollController _autoScrollController = AutoScrollController();
   List<ToothpasteProduct> _products = [];
   final ProductSort _productSort = ProductSort();
@@ -50,13 +50,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _dosome() async {
-    var ref = await FirestoreConsts.firestoreToothpasteCollection.get();
+    var ref = await FirestoreConsts.firestoreGuidesCollection.get();
+    int order = 0;
     for (var doc in ref.docs){
-      if (doc.data()['effect_duration'] == ""){
-        FirestoreConsts.firestoreToothpasteCollection.doc(doc.id).update({
-          'effect_duration' : "Opdateres"
-        });
-      }
+      FirestoreConsts.firestoreGuidesCollection.doc(doc.id).update({
+        'order' : order
+      });
+      order++;
     }
   }
 

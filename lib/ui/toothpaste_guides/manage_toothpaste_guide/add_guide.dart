@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tandluppen_web/core/const/firestore_consts.dart';
 import 'package:tandluppen_web/core/model/toothpaste_guide.dart';
 import 'package:uuid/uuid.dart';
 
@@ -27,7 +28,7 @@ class _AddToothpasteGuideScreenState extends State<AddToothpasteGuideScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.withOpacity(0.15),
       appBar: AppBar(
-        title: Text("Tilføj guide", style: whiteHeaderTextStyle),
+        title: Text("Opret guide", style: whiteHeaderTextStyle),
         elevation: 3,
         backgroundColor: const Color(0xFFFF6624),
         leading: const BackButton(color: Colors.white,),
@@ -118,7 +119,10 @@ class _AddToothpasteGuideScreenState extends State<AddToothpasteGuideScreen> {
     });
 
     var uuid = const Uuid().v4();
-    ToothpasteGuide toothpasteGuide = ToothpasteGuide(id: uuid, title: title, content: content);
+    var  guidesDocs = await FirestoreConsts.firestoreGuidesCollection.get();
+    int currentGuidesLength = guidesDocs.size;
+
+    ToothpasteGuide toothpasteGuide = ToothpasteGuide(id: uuid, title: title, content: content, order: currentGuidesLength + 1);
 
     await ToothpasteGuideService().storeGuide(toothpasteGuide);
     Navigator.pop(context);

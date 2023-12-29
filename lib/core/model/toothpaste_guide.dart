@@ -2,14 +2,16 @@ class ToothpasteGuide{
   final String id;
   final String title;
   final String content;
+  final int order;
 
-  ToothpasteGuide({required this.id, required this.title, required this.content});
+  ToothpasteGuide({required this.id, required this.title, required this.content, required this.order});
 
   factory ToothpasteGuide.fromJson(Map<String, dynamic> json){
     return ToothpasteGuide(
         id: json['id'],
         title: json['title'],
-        content: json['content']
+        content: json['content'],
+        order: json['order']
     );
   }
 
@@ -17,7 +19,8 @@ class ToothpasteGuide{
     Map<String, dynamic> json = {
       'id': id,
       'title': title,
-      'content': content
+      'content': content,
+      'order': order
     };
     return json;
   }

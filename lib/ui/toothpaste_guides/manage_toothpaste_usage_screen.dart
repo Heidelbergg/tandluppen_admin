@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tandluppen_web/core/const/firestore_consts.dart';
+import 'package:tandluppen_web/core/service/toothpaste_guide/guide_service.dart';
 import 'package:tandluppen_web/ui/widget/guide/guide_card.dart';
 
 import '../../core/model/toothpaste_guide.dart';
@@ -75,33 +76,56 @@ class _ManageToothpasteUsageScreenState
               borderRadius: const BorderRadius.all(Radius.circular(10))
               ),
               child: StreamBuilder(
-                      stream: FirestoreConsts.firestoreGuidesCollection.snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                         return ListView.builder(
-                             itemCount: snapshot.data!.docs.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                ToothpasteGuide toothpasteGuide = ToothpasteGuide.fromJson(snapshot.data!.docs[index].data());
-                                return InkWell(
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (context) =>
-                                                EditToothpasteGuideScreen(toothpasteGuide: toothpasteGuide)));
-                                  },
-                                  child: ToothpasteGuideCard(
-                                      key: ValueKey(toothpasteGuide.id),
-                                      toothpasteGuide: toothpasteGuide),
-                                );
-                              });
-                        } else if (snapshot.data!.docs.isEmpty) {
-                          return const Center(child: Text("Ingen guides"));
-                        } else if (snapshot.hasError) {
-                          return const Icon(Icons.error_outline);
-                        } else {
-                          return const CircularProgressIndicator();
-                        }
-                      })),
+                stream: FirestoreConsts.firestoreGuidesCollection.orderBy('order', descending: false).snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<ToothpasteGuide> guides = snapshot.data!.docs
+                        .map((doc) => ToothpasteGuide.fromJson(doc.data()))
+                        .toList();
+
+                    return ReorderableListView.builder(
+                      itemCount: guides.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        ToothpasteGuide toothpasteGuide = guides[index];
+
+                        return InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => EditToothpasteGuideScreen(toothpasteGuide: toothpasteGuide),
+                            ));
+                          },
+                          key: ValueKey(toothpasteGuide.id),
+                          child: ToothpasteGuideCard(
+                            key: ValueKey(toothpasteGuide.id),
+                            toothpasteGuide: toothpasteGuide,
+                          ),
+                        );
+                      },
+                      onReorder: (int oldIndex, int newIndex) {
+                        setState(() {
+                          if (newIndex > oldIndex) {
+                            newIndex -= 1;
+                          }
+                          final ToothpasteGuide item = guides.removeAt(oldIndex);
+                          guides.insert(newIndex, item);
+
+                          for (int i = 0; i < guides.length; i++) {
+                            ToothpasteGuideService().updateOrder(i, guides[i].id);
+                            //print("${guides[i].title} - $i");
+                          }
+                        });
+                      },
+                    );
+                  } else if (snapshot.data!.docs.isEmpty) {
+                    return const Center(child: Text("Ingen guides"));
+                  } else if (snapshot.hasError) {
+                    return const Icon(Icons.error_outline);
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                },
+              )
+          ),
         ),
       ],
     );

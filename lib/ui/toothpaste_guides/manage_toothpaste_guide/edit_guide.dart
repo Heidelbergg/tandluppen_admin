@@ -133,7 +133,7 @@ class _EditToothpasteGuideScreenState extends State<EditToothpasteGuideScreen> {
       );
     });
 
-    ToothpasteGuide toothpasteGuide = ToothpasteGuide(id: widget.toothpasteGuide.id, title: title, content: content);
+    ToothpasteGuide toothpasteGuide = ToothpasteGuide(id: widget.toothpasteGuide.id, title: title, content: content, order: widget.toothpasteGuide.order);
 
     await ToothpasteGuideService().updateGuide(toothpasteGuide);
     Navigator.pop(context);
