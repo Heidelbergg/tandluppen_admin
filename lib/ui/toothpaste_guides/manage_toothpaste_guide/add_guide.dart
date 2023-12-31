@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker_web/image_picker_web.dart';
 import 'package:tandluppen_web/core/const/firestore_consts.dart';
 import 'package:tandluppen_web/core/model/toothpaste_guide.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../core/service/toothpaste_guide/guide_image_service.dart';
 import '../../../core/service/toothpaste_guide/guide_service.dart';
 import '../../../core/util/validator/validator.dart';
 import '../../styles/button_style.dart';
@@ -22,6 +26,20 @@ class _AddToothpasteGuideScreenState extends State<AddToothpasteGuideScreen> {
 
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
   final ValidatorUtil _validatorUtil = ValidatorUtil();
+
+  Uint8List? _image;
+  bool _hasImage = false;
+  bool _isHovered = false;
+
+  Future getImage() async {
+    final image = await ImagePickerWeb.getImageAsBytes();
+    if (image != null){
+      setState(() {
+        _image = image;
+        _hasImage = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +95,71 @@ class _AddToothpasteGuideScreenState extends State<AddToothpasteGuideScreen> {
                 maxLines: 10,
               ),
             ),
-            const SizedBox(height: 10,),
+            _hasImage ? SizedBox(
+              height: 250,
+              //width: 150,
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    _image = null;
+                    _hasImage = false;
+                  });
+                },
+                onHover: (value) {
+                  setState(() {
+                    _isHovered = value;
+                  });
+                },
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    if (_hasImage)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.memory(_image!),
+                      ),
+                    if (_isHovered && _hasImage)
+                      Positioned(
+                        top: 30,
+                        right: 2.5,
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _image = null;
+                              _hasImage = false;
+                            });
+                          },
+                          icon: const Icon(Icons.delete_forever_outlined, color: Colors.red),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ) :
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: InkWell(
+                  onTap: getImage,
+                  child: Container(
+                    height: 300,
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(Radius.circular(10)),
+                        color: Colors.grey.withOpacity(0.1)
+                    ),
+                    child: const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.image_search_rounded),
+                          Text("Klik for at uploade et billede")
+                        ],
+                      ),
+                    ),
+
+                  )),
+            ),
           ],
         ),
       ),
@@ -125,6 +207,9 @@ class _AddToothpasteGuideScreenState extends State<AddToothpasteGuideScreen> {
     ToothpasteGuide toothpasteGuide = ToothpasteGuide(id: uuid, title: title, content: content, order: currentGuidesLength + 1);
 
     await ToothpasteGuideService().storeGuide(toothpasteGuide);
+    if (_image != null){
+      await GuideImageService().storeGuideImageToStorage(_image, uuid);
+    }
     Navigator.pop(context);
     Navigator.pop(context, uuid);
   }

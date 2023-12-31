@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker_web/image_picker_web.dart';
 import 'package:tandluppen_web/core/model/toothpaste_guide.dart';
 
+import '../../../core/service/toothpaste_guide/guide_image_service.dart';
 import '../../../core/service/toothpaste_guide/guide_service.dart';
 import '../../../core/util/validator/validator.dart';
 import '../../styles/button_style.dart';
@@ -16,11 +20,19 @@ class EditToothpasteGuideScreen extends StatefulWidget {
 }
 
 class _EditToothpasteGuideScreenState extends State<EditToothpasteGuideScreen> {
+
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
 
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
   final ValidatorUtil _validatorUtil = ValidatorUtil();
+
+  final ToothpasteGuideService _toothpasteGuideService = ToothpasteGuideService();
+  final GuideImageService _guideImageService = GuideImageService();
+
+  Uint8List? _image;
+  String? _savedImage;
+  bool _hasImage = false;
 
   @override
   void initState() {
@@ -29,13 +41,29 @@ class _EditToothpasteGuideScreenState extends State<EditToothpasteGuideScreen> {
   }
 
   _getGuide() async {
-    ToothpasteGuide? toothpasteGuide = await ToothpasteGuideService().getGuide(widget.toothpasteGuide.id);
+    ToothpasteGuide? toothpasteGuide = await _toothpasteGuideService.getGuide(widget.toothpasteGuide.id);
+    String? image = await _guideImageService.getImageUrl(widget.toothpasteGuide.id);
+
     setState(() {
       if (toothpasteGuide != null){
         titleController.text = toothpasteGuide.title;
         contentController.text = toothpasteGuide.content;
       }
+      if (image != null){
+        _savedImage = image;
+        _hasImage = true;
+      }
     });
+  }
+
+  Future getImage() async {
+    final image = await ImagePickerWeb.getImageAsBytes();
+    if (image != null){
+      setState(() {
+        _image = image;
+        _hasImage = true;
+      });
+    }
   }
 
   @override
@@ -93,6 +121,68 @@ class _EditToothpasteGuideScreenState extends State<EditToothpasteGuideScreen> {
               ),
             ),
             const SizedBox(height: 10,),
+            _hasImage
+                ? SizedBox(
+              height: 250,
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    _image = null;
+                    _hasImage = false;
+                    _savedImage = null;
+                  });
+                },
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: _savedImage != null
+                          ? Image.network(_savedImage!)
+                          : Image.memory(_image!),
+                    ),
+                    Positioned(
+                      top: 30,
+                      right: 2.5,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _image = null;
+                            _savedImage = null;
+                            _hasImage = false;
+                          });
+                        },
+                        icon: const Icon(Icons.delete_forever_outlined,
+                            color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+                : Padding(
+              padding: const EdgeInsets.all(8),
+              child: InkWell(
+                  onTap: getImage,
+                  child: Container(
+                    height: 300,
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                        borderRadius:
+                        const BorderRadius.all(Radius.circular(10)),
+                        color: Colors.grey.withOpacity(0.1)),
+                    child: const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.image_search_rounded),
+                          Text("Klik for at uploade et billede")
+                        ],
+                      ),
+                    ),
+                  )),
+            ),
           ],
         ),
       ),
@@ -135,7 +225,10 @@ class _EditToothpasteGuideScreenState extends State<EditToothpasteGuideScreen> {
 
     ToothpasteGuide toothpasteGuide = ToothpasteGuide(id: widget.toothpasteGuide.id, title: title, content: content, order: widget.toothpasteGuide.order);
 
-    await ToothpasteGuideService().updateGuide(toothpasteGuide);
+    await _toothpasteGuideService.updateGuide(toothpasteGuide);
+    if (_image != null) {
+      await _guideImageService.storeGuideImageToStorage(_image, widget.toothpasteGuide.id);
+    }
     Navigator.pop(context);
     Navigator.pop(context, toothpasteGuide.id);
   }

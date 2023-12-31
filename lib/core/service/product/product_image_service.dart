@@ -17,7 +17,11 @@ class ProductImageService{
 
   Future<String?> getImageUrl(String productId) async {
     final ref = FirebaseStorage.instance.ref('toothpasteImages/$productId');
-    return await ref.getDownloadURL();
+    try {
+      return await ref.getDownloadURL();
+    } catch (e) {
+      return null;
+    }
   }
 
  /* Future<Uint8List?> getImageUrl(String productId) async {
