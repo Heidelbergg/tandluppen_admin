@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tandluppen_web/ui/home/home_screen.dart';
 import 'package:tandluppen_web/ui/styles/text_styles.dart';
 
+import '../../manage_ingredients/manage_toothpaste_ingredients.dart';
 import '../../toothpaste_guides/manage_toothpaste_usage_screen.dart';
 
 class HomeNavDrawer extends StatelessWidget {
@@ -39,6 +40,12 @@ class HomeNavDrawer extends StatelessWidget {
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const ManageToothpasteUsageScreen()), (route) => false);
             },
             title: const Text("Anvendelse af tandpasta"),
+          ),
+          ListTile(
+            onTap: () {
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const ManageToothPasteIngredientsScreen()), (route) => false);
+            },
+            title: const Text("Ingredienser"),
           ),
         ],
       ),

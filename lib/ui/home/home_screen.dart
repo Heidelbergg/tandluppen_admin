@@ -1,7 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:sidebarx/sidebarx.dart';
 import 'package:tandluppen_web/core/const/excel_export_consts.dart';
 import 'package:tandluppen_web/core/const/firestore_consts.dart';
 import 'package:tandluppen_web/core/const/sort_selection_const.dart';
@@ -11,7 +11,6 @@ import 'package:tandluppen_web/core/util/validator/validator.dart';
 import 'package:tandluppen_web/ui/product/add_product_screen.dart';
 import 'package:tandluppen_web/ui/styles/textfield_styles.dart';
 import 'package:tandluppen_web/ui/widget/navbar/side_navbar.dart';
-import 'package:validators/validators.dart';
 
 import '../../core/const/sort_consts.dart';
 import '../../core/model/toothpaste_product.dart';
@@ -50,13 +49,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _dosome() async {
-    var ref = await FirestoreConsts.firestoreGuidesCollection.get();
-    int order = 0;
+    var ref = await FirestoreConsts.firestoreToothpasteCollection.get();
     for (var doc in ref.docs){
-      FirestoreConsts.firestoreGuidesCollection.doc(doc.id).update({
-        'order' : order
-      });
-      order++;
+      List<dynamic> list = doc.data()['ingredients'];
+      List<dynamic> list2 = doc.data()['usage'];
+      if (list.contains('Zinc') && !list2.contains('HALI')){
+        FirestoreConsts.firestoreToothpasteCollection.doc(doc.id).update({
+          'usage' : FieldValue.arrayUnion(['HALI'])
+        });
+      }
     }
   }
 
