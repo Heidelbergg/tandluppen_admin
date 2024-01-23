@@ -24,4 +24,42 @@ class IngredientsService{
     return ToothpasteIngredient.fromJson(reference.data()!);
   }
 
+  Future<void> compareProductIngredientsWithDb() async {
+    var toothpasteIngredientsCollection = await FirestoreConsts.firestoreToothpasteIngredients.get();
+    var toothpasteProductsCollection = await FirestoreConsts.firestoreToothpasteCollection.get();
+
+    List<ToothpasteProduct> products = toothpasteProductsCollection.docs.map((e) => ToothpasteProduct.fromJson(e.data())).toList();
+    List<ToothpasteIngredient> dbIngredients = toothpasteIngredientsCollection.docs.map((e) => ToothpasteIngredient.fromJson(e.data())).toList();
+    List<String> missingIngredients = [];
+
+    for (ToothpasteProduct product in products) {
+      for (String productIngredient in product.ingredients) {
+        bool ingredientFound = false;
+        for (ToothpasteIngredient dbIngredient in dbIngredients) {
+          if (dbIngredient.name == productIngredient) {
+            ingredientFound = true;
+            break;
+          }
+        }
+
+        if (!ingredientFound) {
+          missingIngredients.add(productIngredient);
+        }
+      }
+    }
+    List<String> sortedList = missingIngredients.toSet().toList();
+    sortedList = sortedList.map((ingredient) => ingredient.replaceAll('/', '')).toList();
+    print("MISSING INGREDIENTES: $sortedList");
+    uploadMissingIngredients(sortedList);
+  }
+
+  Future<void> uploadMissingIngredients(List<String> ingredientsList) async {
+    for (var item in ingredientsList){
+      await FirestoreConsts.firestoreToothpasteIngredients.doc(item).set({
+        'name': item,
+        'description': 'Opdateres'
+      });
+    }
+  }
+
 }

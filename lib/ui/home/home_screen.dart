@@ -14,6 +14,7 @@ import 'package:tandluppen_web/ui/widget/navbar/side_navbar.dart';
 
 import '../../core/const/sort_consts.dart';
 import '../../core/model/toothpaste_product.dart';
+import '../../core/service/product/ingredients_service.dart';
 import '../product/edit_product_screen.dart';
 import '../styles/text_styles.dart';
 import '../widget/product/toothpaste_card.dart';
@@ -45,25 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadProductsAndSetSortOption(null);
-    //_dosome();
-  }
-
-  _dosome() async {
-    var ref = await FirestoreConsts.firestoreToothpasteCollection.get();
-    for (var doc in ref.docs){
-      List<dynamic> list = doc.data()['ingredients'];
-      List<dynamic> list2 = doc.data()['usage'];
-      if (list.contains('Zinc') && !list2.contains('HALI')){
-        FirestoreConsts.firestoreToothpasteCollection.doc(doc.id).update({
-          'usage' : FieldValue.arrayUnion(['HALI'])
-        });
-      }
-    }
   }
 
   _loadProductsAndSetSortOption(String? productId) async {
     _useGlobalSortParameter();
-    _products = await ProductService().getToothpasteProductList();;
+    _products = await ProductService().getToothpasteProductList();
     if (_selectedSortOption != null) {
       _productSort.sortProducts(_products, _selectedSortOption);
     }

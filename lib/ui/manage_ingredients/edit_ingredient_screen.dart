@@ -42,14 +42,14 @@ class _EditToothpasteGuideScreenState extends State<EditIngredientScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.withOpacity(0.15),
       appBar: AppBar(
-        title: Text("Rediger ingrediens", style: whiteHeaderTextStyle),
+        title: Text(widget.toothpasteIngredient.name, style: whiteHeaderTextStyle),
         elevation: 3,
         backgroundColor: const Color(0xFFFF6624),
         leading: const BackButton(color: Colors.white,),
       ),
       body: Container(
-        padding: EdgeInsets.all(16.0),
-        margin: EdgeInsets.only(left: 150, right: 150),
+        padding: const EdgeInsets.all(16.0),
+        margin: const EdgeInsets.only(left: 150, right: 150),
         child: Form(
           key: _key,
           child: ListView(
