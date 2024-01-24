@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:tandluppen_web/core/const/firestore_consts.dart';
 import 'package:tandluppen_web/core/model/ingredient.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product.dart';
@@ -48,8 +49,7 @@ class IngredientsService{
       }
     }
     List<String> sortedList = missingIngredients.toSet().toList();
-    sortedList = sortedList.map((ingredient) => ingredient.replaceAll('/', '')).toList();
-    print("MISSING INGREDIENTES: $sortedList");
+    debugPrint("NON-USED INGREDIENTES: $sortedList");
     uploadMissingIngredients(sortedList);
   }
 
