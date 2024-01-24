@@ -43,6 +43,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   bool _hasImage = false;
   bool _isHovered = false;
   bool _linkVisible = false;
+  bool _pictureRights = false;
 
   List<String> _anvendelseList = [];
 
@@ -210,6 +211,25 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   child: Checkbox(value: _linkVisible, onChanged: (bool? checked){
                     setState(() {
                       _linkVisible = checked!;
+                    });
+                  }),
+                )
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 15),
+                    child: Text("Billedrettigheder", style: mediumBlackTextStyle)
+                  ),
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 10,
+                  child: Checkbox(value: _pictureRights, onChanged: (bool? checked){
+                    setState(() {
+                      _pictureRights = checked!;
                     });
                   }),
                 )
@@ -403,6 +423,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         usage: usage,
         rda: int.parse(rda),
         effect: effect,
+        pictureRights: _pictureRights,
         effectDuration: result,
         countryCode: countryCode,
         ingredients: ingredientsList);

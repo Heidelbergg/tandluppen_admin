@@ -47,6 +47,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   bool _hasImage = false;
   bool _linkVisible = false;
+  bool _pictureRights = false;
 
   List<dynamic> _anvendelseList = [];
   List<String> _missingData = [];
@@ -79,6 +80,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       if (product!.usage.isNotEmpty) {
         _anvendelseList = product.usage;
         _linkVisible = product.link.isVisible;
+        _pictureRights = product.pictureRights;
       }
     });
   }
@@ -331,6 +333,25 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 )
               ],
             ),
+            const SizedBox(height: 10,),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                      padding: const EdgeInsets.only(left: 15),
+                      child: Text("Billedrettigheder", style: mediumBlackTextStyle)
+                  ),
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 10,
+                  child: Checkbox(value: _pictureRights, onChanged: (bool? checked){
+                    setState(() {
+                      _pictureRights = checked!;
+                    });
+                  }),
+                )
+              ],
+            ),
           ],
         ),
       ),
@@ -541,6 +562,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         flouride: int.parse(flourContent),
         usage: usage,
         rda: int.parse(rda),
+        pictureRights: _pictureRights,
         effect: effect,
         effectDuration: result,
         countryCode: countryCode,

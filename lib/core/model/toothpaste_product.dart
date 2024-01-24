@@ -11,6 +11,7 @@ class ToothpasteProduct {
   final String countryCode;
   final int flouride;
   final int rda;
+  final bool pictureRights;
   final List<dynamic> usage;
   final List<dynamic> ingredients;
 
@@ -26,6 +27,7 @@ class ToothpasteProduct {
       required this.effect,
       required this.effectDuration,
       required this.ingredients,
+      required this.pictureRights,
       required this.countryCode});
 
   factory ToothpasteProduct.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class ToothpasteProduct {
       rda: json['rda'] ?? 0,
       effect: json['effect'] ?? 'Opdateres',
       effectDuration: json['effect_duration'] ?? 'Opdateres',
+      pictureRights: json['picture_rights'] ?? false,
       ingredients: json['ingredients'] ?? [],
       countryCode: json['c_code'] ?? 'Opdateres',
     );
@@ -57,6 +60,7 @@ class ToothpasteProduct {
       'rda': rda,
       'effect': effect,
       'effect_duration': effectDuration,
+      'picture_rights': pictureRights,
       'ingredients': ingredients,
       'c_code': countryCode
     };
@@ -75,6 +79,7 @@ class ToothpasteProduct {
       rda.toString(),
       effectDuration,
       effect,
+      pictureRights.toString(),
       countryCode,
       ...ingredients.map((ingredient) => '$ingredient'),
     ];

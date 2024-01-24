@@ -46,6 +46,17 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadProductsAndSetSortOption(null);
+    _doSome();
+  }
+
+  void _doSome() async {
+    var reference = await FirestoreConsts.firestoreToothpasteCollection.get();
+
+    for (var item in reference.docs){
+      FirestoreConsts.firestoreToothpasteCollection.doc(item.id).update({
+        'picture_rights': false
+      });
+    }
   }
 
   _loadProductsAndSetSortOption(String? productId) async {

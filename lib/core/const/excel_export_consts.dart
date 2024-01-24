@@ -10,6 +10,7 @@ class ExcelExportConst{
     'rda',
     'effectDuration',
     'effect',
+    'pictureRights',
     'countryCode',
     'ingredients'
   ];
