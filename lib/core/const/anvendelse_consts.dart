@@ -10,7 +10,7 @@ class AnvendelseConsts {
     'DRY',
     'Classic',
     'ECO',
-    'Hali',
+    'HALI',
     'Taste'
   ];
 }

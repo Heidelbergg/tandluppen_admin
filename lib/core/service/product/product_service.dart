@@ -123,7 +123,7 @@ class ProductService {
     if (toothpasteProduct.flouride == 1) {
       missingData.add("Flourindhold skal opdateres");
     }
-    if (toothpasteProduct.usage.isEmpty) {
+    if (toothpasteProduct.usage.isEmpty || toothpasteProduct.usage == []) {
       missingData.add("Anvendelse mangler");
     }
     if (toothpasteProduct.ingredients.contains("Opdateres")) {
