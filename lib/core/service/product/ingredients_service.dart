@@ -50,7 +50,7 @@ class IngredientsService{
     }
     List<String> sortedList = missingIngredients.toSet().toList();
     debugPrint("NON-USED INGREDIENTES: $sortedList");
-    uploadMissingIngredients(sortedList);
+    //uploadMissingIngredients(sortedList);
   }
 
   Future<void> uploadMissingIngredients(List<String> ingredientsList) async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tandluppen_web/core/model/ingredient.dart';
 import 'package:tandluppen_web/core/service/product/ingredients_service.dart';
 
@@ -42,8 +43,13 @@ class _EditToothpasteGuideScreenState extends State<EditIngredientScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.withOpacity(0.15),
       appBar: AppBar(
-        title: Text(widget.toothpasteIngredient.name, style: whiteHeaderTextStyle),
+        title: ListTile(title: Text(widget.toothpasteIngredient.name, style: whiteHeaderTextStyle), onTap: () async {
+          await Clipboard.setData(ClipboardData(text: widget.toothpasteIngredient.name)).then((value) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Ingrediens kopieret til udklipsholder")));
+          });
+        }),
         elevation: 3,
+        centerTitle: false,
         backgroundColor: const Color(0xFFFF6624),
         leading: const BackButton(color: Colors.white,),
       ),
