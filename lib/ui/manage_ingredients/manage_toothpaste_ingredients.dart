@@ -40,7 +40,7 @@ class _ManageToothPasteIngredientsScreenState
         ),
       ),
       floatingActionButton: FloatingActionButton(onPressed: (){
-        IngredientsService().compareProductIngredientsWithDb();
+        IngredientsService().checkUnusedIngredientsInProducts(context);
       }, child: const Icon(Icons.refresh),),
       drawer: const HomeNavDrawer(),
       body: _buildIngredientsView(),
