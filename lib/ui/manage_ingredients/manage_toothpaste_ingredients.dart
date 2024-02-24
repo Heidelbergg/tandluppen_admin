@@ -39,6 +39,9 @@ class _ManageToothPasteIngredientsScreenState
           onPressed: () => _key.currentState!.openDrawer(),
         ),
       ),
+      floatingActionButton: FloatingActionButton(onPressed: (){
+        IngredientsService().compareProductIngredientsWithDb();
+      }, child: const Icon(Icons.refresh),),
       drawer: const HomeNavDrawer(),
       body: _buildIngredientsView(),
     );

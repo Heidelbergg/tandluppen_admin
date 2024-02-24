@@ -1,9 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:tandluppen_web/core/const/excel_export_consts.dart';
-import 'package:tandluppen_web/core/const/firestore_consts.dart';
 import 'package:tandluppen_web/core/const/sort_selection_const.dart';
 import 'package:tandluppen_web/core/service/product/product_service.dart';
 import 'package:tandluppen_web/core/util/sorting/product_sorting/product_sort.dart';
@@ -14,7 +12,6 @@ import 'package:tandluppen_web/ui/widget/navbar/side_navbar.dart';
 
 import '../../core/const/sort_consts.dart';
 import '../../core/model/toothpaste_product.dart';
-import '../../core/service/product/ingredients_service.dart';
 import '../product/edit_product_screen.dart';
 import '../styles/text_styles.dart';
 import '../widget/product/toothpaste_card.dart';
@@ -41,6 +38,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Export to CSV
   List<List<String>> listOfLists = [];
+
+  @override
+  void dispose() {
+    _autoScrollController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
