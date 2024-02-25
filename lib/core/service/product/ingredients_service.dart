@@ -4,15 +4,17 @@ import 'package:tandluppen_web/core/model/ingredient.dart';
 import 'package:tandluppen_web/core/model/toothpaste_product.dart';
 
 class IngredientsService {
-  Future<List<ToothpasteIngredient>> getAllIngredientsSorted() async {
+  Future<List<ToothpasteIngredient>> getAllIngredientsSorted(BuildContext context) async {
     List<ToothpasteIngredient> ingredientsList = [];
+    List<ToothpasteIngredient> unusedIngredients = await IngredientsService().checkUnusedIngredientsInProducts(context);
 
-    var toothpasteIngredientsCollection =
-        await FirestoreConsts.firestoreToothpasteIngredients.get();
+    var toothpasteIngredientsCollection = await FirestoreConsts.firestoreToothpasteIngredients.get();
 
     for (var ingredient in toothpasteIngredientsCollection.docs) {
       ingredientsList.add(ToothpasteIngredient.fromJson(ingredient.data()));
     }
+
+    ingredientsList.removeWhere((ingredient1) => unusedIngredients.any((ingredient2) => ingredient1.name == ingredient2.name));
     return ingredientsList;
   }
 
@@ -66,7 +68,7 @@ class IngredientsService {
     //uploadMissingIngredients(sortedList);
   }
 
-  Future<void> checkUnusedIngredientsInProducts(BuildContext context) async {
+  Future<List<ToothpasteIngredient>> checkUnusedIngredientsInProducts(BuildContext context) async {
     var toothpasteIngredientsCollection =
         await FirestoreConsts.firestoreToothpasteIngredients.get();
     var toothpasteProductsCollection =
@@ -79,19 +81,18 @@ class IngredientsService {
         .docs
         .map((e) => ToothpasteIngredient.fromJson(e.data()))
         .toList();
-    List<String> missingIngredients = [];
+    List<ToothpasteIngredient> missingIngredients = [];
 
     for (ToothpasteIngredient dbIngredient in dbIngredients) {
-      for (ToothpasteProduct product in products) {
-        if (!product.ingredients.contains(dbIngredient)) {
-          missingIngredients.add(dbIngredient.name);
-        }
+      if (products.every((product) => !product.ingredients.contains(dbIngredient.name))) {
+        missingIngredients.add(dbIngredient);
       }
     }
-    List<String> sortedList = missingIngredients.toSet().toList();
+
+    List<ToothpasteIngredient> sortedList = missingIngredients.toSet().toList();
     _showSnackbar(context, sortedList);
+    return sortedList;
     debugPrint("NON-USED INGREDIENTES: $sortedList");
-    //deleteIngredients();
   }
 
   Future<void> uploadMissingIngredients(List<String> ingredientsList) async {
@@ -111,10 +112,10 @@ class IngredientsService {
     }
   }
 
-  void _showSnackbar(BuildContext context, List<String> sortedList) {
+  void _showSnackbar(BuildContext context, List<ToothpasteIngredient> sortedList) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
-          "${sortedList.length.toString()} ingredienser er registereret ikke i brug, af eksisterende produkter i databasen."),
+          "${sortedList.length.toString()} ingredienser i databasen er registereret ikke i brug af de eksisterende produkter. Ingredienserne er ikke synlige i oversigten."),
       backgroundColor: Colors.blue,
       duration: const Duration(seconds: 10),
     ));

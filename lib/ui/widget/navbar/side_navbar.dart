@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tandluppen_web/ui/home/home_screen.dart';
 import 'package:tandluppen_web/ui/styles/text_styles.dart';
 
-import '../../manage_ingredients/manage_toothpaste_ingredients.dart';
+import '../../manage_ingredients/manage_toothpaste_ingredients_screen.dart';
 import '../../toothpaste_guides/manage_toothpaste_usage_screen.dart';
 
 class HomeNavDrawer extends StatelessWidget {

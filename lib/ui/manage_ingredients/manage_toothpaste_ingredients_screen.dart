@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tandluppen_web/core/model/ingredient.dart';
 
@@ -11,12 +10,10 @@ class ManageToothPasteIngredientsScreen extends StatefulWidget {
   const ManageToothPasteIngredientsScreen({super.key});
 
   @override
-  State<ManageToothPasteIngredientsScreen> createState() =>
-      _ManageToothPasteIngredientsScreenState();
+  State<ManageToothPasteIngredientsScreen> createState() => _ManageToothPasteIngredientsScreenState();
 }
 
-class _ManageToothPasteIngredientsScreenState
-    extends State<ManageToothPasteIngredientsScreen> {
+class _ManageToothPasteIngredientsScreenState extends State<ManageToothPasteIngredientsScreen> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
   @override
@@ -39,9 +36,6 @@ class _ManageToothPasteIngredientsScreenState
           onPressed: () => _key.currentState!.openDrawer(),
         ),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: (){
-        IngredientsService().checkUnusedIngredientsInProducts(context);
-      }, child: const Icon(Icons.refresh),),
       drawer: const HomeNavDrawer(),
       body: _buildIngredientsView(),
     );
@@ -53,8 +47,7 @@ class _ManageToothPasteIngredientsScreenState
       children: [
         Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Text("Ingredienser", style: largeBoldBlackTextStyle),
-        ),
+          child: Text("Ingredienser", style: largeBoldBlackTextStyle)),
         FractionallySizedBox(
           widthFactor: MediaQuery.of(context).size.width > 1000 ? 0.75 : 0.95,
           child: Container(
@@ -63,15 +56,14 @@ class _ManageToothPasteIngredientsScreenState
                   border: Border.all(color: Colors.grey.withOpacity(0.25)),
                   borderRadius: const BorderRadius.all(Radius.circular(10))),
               child: FutureBuilder(
-                future: IngredientsService().getAllIngredientsSorted(),
+                future: IngredientsService().getAllIngredientsSorted(context),
                 builder: (context,
                     AsyncSnapshot<List<ToothpasteIngredient>> snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data!.isEmpty) {
                       return const Center(child: Text("Ingen ingredienser"));
                     } else {
-                      List<ToothpasteIngredient> ingredients =
-                          snapshot.data ?? [];
+                      List<ToothpasteIngredient> ingredients = snapshot.data ?? [];
                       return ListView.builder(
                           itemCount: ingredients.length,
                           itemBuilder: (BuildContext context, int index) {
